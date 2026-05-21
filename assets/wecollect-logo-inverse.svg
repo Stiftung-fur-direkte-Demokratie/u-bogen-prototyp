@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="WeCollect">
+  
+  <path fill="#FFFFFF" d="&#xA;    M 24 8&#xA;    H 168&#xA;    a 16 16 0 0 1 16 16&#xA;    V 132&#xA;    a 16 16 0 0 1 -16 16&#xA;    H 64&#xA;    L 36 184&#xA;    L 44 148&#xA;    H 24&#xA;    a 16 16 0 0 1 -16 -16&#xA;    V 24&#xA;    a 16 16 0 0 1 16 -16&#xA;    Z&#xA;  "></path>
+  <text x="96" y="82" text-anchor="middle" font-family="Fira Sans, system-ui, sans-serif" font-weight="800" font-size="56" letter-spacing="2" fill="#14161A">WE</text>
+  <text x="96" y="118" text-anchor="middle" font-family="Fira Sans, system-ui, sans-serif" font-weight="700" font-size="22" letter-spacing="1.5" fill="#14161A">COLLECT</text>
+</svg>

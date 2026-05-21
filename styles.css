@@ -1,0 +1,1303 @@
+/* ============================================================
+   U-Bogen prototype — A4 PORTRAIT — styles on top of WeCollect tokens
+   ============================================================ */
+
+html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(--text-primary); font-family: var(--font-sans); }
+* { box-sizing: border-box; }
+
+/* Reset typography for prototype components — wecollect.css's bare-tag styles (p { font-size: 19px }) would otherwise blow up our compact layouts */
+.bogen-stack p, .bogen-stack h1, .bogen-stack h2, .bogen-stack h3, .bogen-stack h4,
+.miniform-frame p, .miniform-frame h2, .miniform-frame h3, .miniform-frame h4,
+.envelope p, .envelope div,
+.fold-diagram p, .fold-diagram h4,
+.qr-modal p, .qr-modal h4,
+.tour-banner span, .tour-banner div,
+.bogen-controls span,
+.annot-pop p, .annot-pop h4 {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+.bogen-stack p { font-size: inherit; }
+
+/* ---------- BOGEN (A4 portrait) ---------- */
+/* 210 × 297 mm — rendered 794 × 1123 px (≈ 3.78 px/mm) */
+.bogen-stack { position: relative; width: 794px; height: 1123px; perspective: 2400px; }
+
+.bogen-card {
+  position: absolute; inset: 0;
+  background: transparent;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transition: transform 750ms var(--ease-out);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  font-size: 11.5px; line-height: 1.35;
+}
+.bogen-card.is-flipped { transform: rotateY(180deg); }
+
+.bogen-face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: #ffffff;
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.04),
+    0 8px 24px rgba(20,30,50,0.10),
+    0 28px 70px rgba(20,30,50,0.12);
+}
+/* Inner wrapper holds padding + overflow so the face itself stays 3D-rendered */
+.bogen-face > .face-inner {
+  position: absolute; inset: 0;
+  padding: 24px 28px;
+  overflow: hidden;
+}
+.bogen-face::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(700px 400px at 12% 0%, rgba(0,0,0,0.012), transparent 60%),
+    radial-gradient(700px 400px at 88% 100%, rgba(0,0,0,0.012), transparent 60%);
+}
+.bogen-face--front {
+  transform: translateZ(1px);
+}
+.bogen-face--back {
+  transform: rotateY(180deg) translateZ(1px);
+}
+.bogen-face::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(700px 400px at 12% 0%, rgba(0,0,0,0.012), transparent 60%),
+    radial-gradient(700px 400px at 88% 100%, rgba(0,0,0,0.012), transparent 60%);
+}
+
+/* ============================================================
+   VORDERSEITE — A4 portrait, fold in horizontal middle
+   ============================================================ */
+
+.front-grid {
+  position: relative; height: 100%;
+  display: grid;
+  /* Two equal halves; fold mark sits absolutely at exactly 50% */
+  grid-template-rows: 1fr 1fr;
+}
+
+/* Each half is a flex column. min-height: 0 + overflow:hidden so they don't push each other. */
+.half-top, .half-bottom {
+  display: flex; flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  overflow: hidden;
+}
+.half-top { padding-bottom: 16px; /* breathing room above the fold */ }
+.half-bottom { padding-top: 16px; /* breathing room below the fold */ }
+
+/* The fold mark, absolutely positioned at exactly 50% of the A4.
+   Higher specificity (.fold-mark.fold-mark-abs) so it overrides the
+   base .fold-mark { position: relative } rule defined later in the file. */
+.fold-mark.fold-mark-abs {
+  position: absolute;
+  left: -28px; right: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+}
+
+/* Hard-grow the name + signature zones so they take whatever's left in each half */
+.write-zone--name { flex: 1; min-height: 75px; }
+.write-zone--sig  { flex: 1; min-height: 75px; }
+
+/* Top strip — QR | title block | meta */
+.front-top {
+  display: grid;
+  grid-template-columns: 78px 1fr auto;
+  gap: 16px;
+  align-items: start;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--surface-divider);
+}
+.qr-box {
+  width: 78px; height: 78px;
+  background: #fff; border: 1px solid #15161a;
+  cursor: pointer;
+  position: relative;
+}
+.qr-box svg { width: 100%; height: 100%; display: block; }
+.qr-box .qr-label {
+  position: absolute; bottom: -14px; left: 0; right: 0;
+  font-size: 8px; line-height: 1; color: var(--text-muted);
+  text-align: center; letter-spacing: 0.5px; text-transform: uppercase;
+  white-space: nowrap;
+}
+.qr-box:hover { outline: 2px solid var(--surface-brand); outline-offset: 2px; }
+
+.front-title { min-width: 0; }
+.front-title .kicker {
+  display: inline-block; background: var(--surface-inverse); color: #fff;
+  font-size: 9px; letter-spacing: 1.2px; padding: 3px 8px;
+  text-transform: uppercase;
+}
+.front-title h1 {
+  font-size: 17px; line-height: 21px; margin: 6px 0 0;
+  font-weight: 500; color: var(--text-primary);
+  letter-spacing: -0.1px;
+}
+.front-title h1 em {
+  font-style: normal; color: var(--surface-brand); font-weight: 500;
+}
+
+.front-meta {
+  text-align: right; font-size: 9.5px; color: var(--text-muted);
+  display: flex; flex-direction: column; gap: 4px;
+  white-space: nowrap; line-height: 1.3;
+}
+.front-meta .deadline {
+  background: #FFCB26; color: var(--text-primary);
+  padding: 3px 8px; font-weight: 500;
+  font-variant-numeric: tabular-nums; font-size: 10px;
+}
+.front-meta .bbl { font-variant-numeric: tabular-nums; }
+.front-meta .bogen-id {
+  font-family: var(--font-mono); font-size: 9px;
+  background: var(--surface-section); padding: 2px 6px;
+  border: 1px dashed var(--surface-divider);
+  color: var(--text-primary);
+}
+
+/* Bullets row */
+.front-bullets {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  padding: 6px 0 8px;
+  border-bottom: 1px solid var(--surface-divider);
+  font-size: 11px; line-height: 1.4; color: var(--text-body);
+}
+.front-bullets li { list-style: none; padding-left: 12px; position: relative; }
+.front-bullets li::before {
+  content: ''; position: absolute; left: 0; top: 6px;
+  width: 5px; height: 5px; background: var(--surface-brand);
+}
+.front-bullets ul { padding: 0; margin: 0; display: contents; }
+
+/* Legal block — preamble + full constitutional amendment text + penalty */
+.legal-block {
+  font-size: 9.5px; line-height: 1.45;
+  color: var(--text-body);
+  padding: 4px 0 6px;
+  border-bottom: 1px solid var(--surface-divider);
+  display: grid; grid-template-columns: 1fr; gap: 2px;
+}
+.legal-block .lead { font-size: 8px; line-height: 1.3; margin: 0; }
+.legal-block .lead strong { font-weight: 500; color: var(--text-primary); }
+.legal-block .initiative-text {
+  column-count: 2; column-gap: 14px; column-rule: 1px solid var(--surface-divider);
+  font-size: 7.5px; line-height: 1.3;
+}
+.legal-block .initiative-text--3col {
+  column-count: 3; column-gap: 12px;
+  font-size: 7.5px; line-height: 1.28;
+  column-fill: balance;
+}
+.legal-block .art { break-inside: auto; margin-bottom: 3px; }
+.legal-block .amendment-lead {
+  font-weight: 500; color: var(--text-primary); margin: 0 0 2px;
+  font-size: 8px;
+}
+.legal-block .art h5 {
+  margin: 0 0 1px; font-size: 8px; font-weight: 500;
+  color: var(--text-primary); letter-spacing: 0.1px;
+  break-after: avoid-column;
+  break-before: avoid-column;
+}
+.legal-block .art p { margin: 0 0 2px; font-size: 7.5px; line-height: 1.32; }
+.legal-block .penalty-line {
+  font-size: 9px; line-height: 1.45;
+  margin: 0;
+  background: var(--surface-section);
+  padding: 6px 10px;
+}
+
+/* Vorgedruckte Personendaten — heading + box */
+.preprint-section {
+  display: grid; gap: 6px;
+}
+.preprint-heading {
+  font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase;
+  font-weight: 500; color: var(--text-primary);
+  margin: 0;
+  display: flex; align-items: center; gap: 8px;
+}
+.preprint-heading .dot {
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--surface-brand);
+}
+.preprint-heading .preprint-stamp {
+  margin-left: auto;
+  font-size: 8.5px; letter-spacing: 1.2px;
+  background: var(--surface-white);
+  color: var(--text-primary);
+  border: 1px solid var(--text-primary);
+  padding: 3px 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.preprint-band {
+  background: var(--surface-section);
+  border: 1px solid var(--surface-divider);
+  padding: 8px 14px;
+}
+.preprint-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 16px;
+  row-gap: 6px;
+  font-size: 11px; color: var(--text-primary);
+  min-width: 0;
+  align-items: baseline;
+}
+.preprint-fields .f {
+  display: flex; align-items: baseline; gap: 8px;
+  min-width: 0;
+}
+.preprint-fields .f .k {
+  font-size: 8.5px; letter-spacing: 0.4px; color: var(--text-muted);
+  text-transform: uppercase; flex-shrink: 0;
+}
+.preprint-fields .f .v {
+  font-weight: 500; font-variant-numeric: tabular-nums;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  min-width: 0;
+}
+.preprint-fields .f-wide {
+  grid-column: span 3;
+  border-top: 1px solid var(--surface-divider);
+  padding-top: 6px;
+  align-items: baseline;
+}
+.preprint-fields .f-wide .v {
+  white-space: normal;
+}
+.preprint-fields .address-line {
+  display: flex; flex-wrap: wrap; gap: 0 10px;
+  align-items: baseline;
+  line-height: 1.45;
+}
+.preprint-fields .address-line .seg { font-weight: 500; }
+.preprint-fields .address-line .sep { color: var(--text-muted); font-weight: 400; }
+
+/* When prefill is OFF: empty values, hide stamp */
+.bogen-card.no-prefill .preprint-fields .f .v { color: transparent; position: relative; }
+.bogen-card.no-prefill .preprint-fields .f .v::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 4px;
+  border-bottom: 1px dotted #99998f;
+}
+.bogen-card.no-prefill .preprint-heading .preprint-stamp { display: none; }
+.bogen-card.no-prefill .preprint-heading .dot { background: var(--text-muted); }
+.bogen-card.no-prefill .preprint-heading { opacity: 0.55; }
+.bogen-card.no-prefill .hand { display: none; }
+
+/* Writing zones — name above fold, signature below fold.
+   min-height is set per-variant (.write-zone--name / .write-zone--sig) above. */
+.write-zone {
+  display: grid; grid-template-rows: auto 1fr;
+  padding: 6px 14px 10px;
+  background: #fafaf7;
+  border: 1px solid var(--surface-divider);
+  position: relative;
+}
+.write-zone .zone-label {
+  font-size: 10px; letter-spacing: 0.4px;
+  color: var(--text-muted);
+  display: flex; gap: 10px; align-items: baseline;
+  text-transform: uppercase;
+}
+.write-zone .zone-label strong {
+  color: var(--text-primary); font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 11px;
+}
+.write-zone .zone-label .lawref { font-size: 9px; color: var(--text-muted); margin-left: auto; }
+.write-zone .blank {
+  flex: 1; min-height: 60px;
+  position: relative;
+  align-self: stretch;
+  margin-top: 6px;
+  border-bottom: 1.5px solid #b8b9b3;
+}
+.write-zone .hand {
+  position: absolute; bottom: 4px; left: 12px;
+  font-size: 28px; line-height: 1; color: #15161a;
+  font-family: 'Caveat', 'Patrick Hand', cursive;
+  letter-spacing: 1px;
+}
+.write-zone .hand.sig {
+  bottom: 8px; left: 60px;
+  font-size: 38px;
+  transform: rotate(-3deg);
+  color: #0c1224;
+  letter-spacing: 0.5px;
+}
+
+.write-zone--name, .write-zone--sig { /* flex sizing defined above */ }
+
+/* Faltmarke — horizontal across the whole width */
+.fold-mark {
+  position: relative;
+  height: 28px;
+  margin: 0 -28px; /* extends to bogen edges */
+  display: flex; align-items: center;
+  background-color: #fafaf7;
+}
+.fold-mark::before {
+  content: '';
+  position: absolute;
+  left: 28px; right: 28px; top: 50%;
+  border-top: 1.5px dashed #15161a;
+  transform: translateY(-50%);
+}
+.fold-mark::after {
+  /* embossed (tactile) sibling line above the dashed line */
+  content: '';
+  position: absolute;
+  left: 28px; right: 28px; top: 50%;
+  border-top: 1px solid rgba(0,0,0,0.18);
+  transform: translateY(-7px);
+}
+.fold-mark .scissors {
+  position: absolute; left: 56px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px;
+  background: #fafaf7; padding: 0 6px;
+  color: #15161a;
+}
+.fold-mark .scissors svg { width: 100%; height: 100%; display: block; }
+.fold-mark .fold-label {
+  position: absolute; right: 56px; top: 50%; transform: translateY(-50%);
+  font-size: 9.5px; letter-spacing: 1.6px; text-transform: uppercase;
+  background: #fafaf7; padding: 0 10px; color: var(--text-muted);
+}
+.fold-mark .fold-mid {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  background: #fafaf7; padding: 0 10px;
+  font-size: 9px; letter-spacing: 1.6px; text-transform: uppercase;
+  color: var(--text-primary); font-weight: 500;
+}
+
+/* Hinweise — 3 columns */
+.hinweise-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  font-size: 9.5px; line-height: 1.4;
+  color: var(--text-body);
+}
+.hinweis {
+  background: var(--surface-section);
+  padding: 8px 10px;
+}
+.hinweis h4 {
+  margin: 0 0 4px; font-size: 9.5px; line-height: 1.2;
+  text-transform: uppercase; letter-spacing: 1px;
+  font-weight: 500; color: var(--text-primary);
+  display: flex; align-items: center; gap: 6px;
+}
+.hinweis h4 .tag {
+  background: var(--text-primary); color: #fff;
+  font-size: 8px; padding: 1px 5px; letter-spacing: 1px;
+}
+.hinweis p { margin: 0 0 4px; }
+.hinweis p:last-child { margin-bottom: 0; }
+.hinweis .lawref {
+  font-family: var(--font-mono); font-size: 8.5px;
+  color: var(--text-muted);
+}
+
+/* Bescheinigung + Komitee + return strip */
+.bottom-row {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px;
+  font-size: 9.5px; line-height: 1.4;
+}
+.bescheinigung {
+  background: #fff; border: 1px solid var(--surface-divider);
+  padding: 10px 12px;
+}
+.bescheinigung h4 {
+  font-size: 9.5px; text-transform: uppercase; letter-spacing: 1px;
+  font-weight: 500; margin: 0 0 6px;
+  color: var(--text-primary);
+}
+.bescheinigung .b-grid {
+  display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 6px 10px;
+  align-items: end; font-size: 9px;
+}
+.bescheinigung .k {
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+.bescheinigung .line { border-bottom: 1px dotted #99998f; height: 13px; }
+.bescheinigung .line.tall { height: 32px; }
+.bescheinigung .anzahl {
+  display: inline-block; background: var(--surface-section);
+  padding: 0 6px; font-weight: 500; font-variant-numeric: tabular-nums;
+}
+.bescheinigung .note { font-size: 8.5px; color: var(--text-muted); margin-top: 6px; font-style: italic; }
+
+.komitee-col {
+  background: var(--surface-section);
+  padding: 10px 12px;
+  font-size: 8.5px; line-height: 1.4; color: var(--text-body);
+}
+.komitee-col h4 {
+  font-size: 9.5px; text-transform: uppercase; letter-spacing: 1px;
+  font-weight: 500; margin: 0 0 6px; color: var(--text-primary);
+}
+.komitee-col .return-line {
+  display: block; margin-top: 6px;
+  border-top: 1px solid var(--surface-divider);
+  padding-top: 6px;
+  font-size: 9px;
+}
+.komitee-col .return-line strong { color: var(--text-primary); font-weight: 500; }
+
+/* ============================================================
+   RÜCKSEITE — Versandseite (A4 portrait, self-mailer)
+   ============================================================ */
+.back-grid {
+  position: relative; height: 100%;
+  display: grid; grid-template-rows: auto auto 1fr auto;
+  gap: 14px;
+}
+.hinweise-on-back {
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--surface-divider);
+}
+.hinweise-on-back .hinweis {
+  padding: 6px 9px;
+  font-size: 9px; line-height: 1.4;
+}
+.hinweise-on-back .hinweis h4 {
+  font-size: 9px; margin-bottom: 3px;
+}
+.hinweise-on-back .hinweis p { margin: 0 0 3px; }
+.hinweise-on-back .hinweis .lawref { font-size: 8px; }
+.back-head {
+  display: grid; grid-template-columns: 96px 1fr auto; gap: 22px;
+  align-items: start;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--surface-divider);
+}
+
+.back-middle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;  /* self-mailer-bottom sits at bottom (below the fold visually) */
+  padding-top: 8px;
+  padding-bottom: 8px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* TOP HALF — just the seal/fold instructions */
+.self-mailer-top {
+  padding: 4px 8px 22px;
+}
+.seal-instr {
+  background: var(--surface-section);
+  padding: 16px 18px;
+  max-width: 480px;
+}
+.seal-instr h4 {
+  font-size: 13px; font-weight: 500; margin: 0 0 10px;
+  letter-spacing: 0.4px; color: var(--text-primary);
+}
+.seal-instr ol {
+  margin: 0; padding-left: 22px;
+  font-size: 11.5px; line-height: 1.55; color: var(--text-body);
+}
+.seal-instr ol li { margin-bottom: 6px; }
+.seal-instr ol li::marker { color: var(--surface-brand); font-weight: 500; }
+
+/* BOTTOM HALF — Sender (left), GAS+Recipient stacked (right) */
+.self-mailer-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 18px;
+  padding: 6px 8px 4px;
+  align-items: start;
+}
+.sender-window {
+  background: #fff;
+  border: 1.5px solid var(--text-primary);
+  padding: 18px 22px;
+}
+.sender-window .sw-label {
+  font-size: 9px; letter-spacing: 1.3px; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 10px;
+}
+.sender-window .sw-name {
+  font-size: 16px; font-weight: 500; color: var(--text-primary); line-height: 1.2;
+}
+.sender-window .sw-addr {
+  font-size: 13px; line-height: 1.5; margin-top: 6px;
+  font-variant-numeric: tabular-nums; color: var(--text-primary);
+}
+.sender-window .tabular { font-variant-numeric: tabular-nums; }
+
+/* Right column: GAS on top, recipient below */
+.right-stack {
+  display: grid; grid-template-rows: auto auto;
+  gap: 12px;
+}
+.recipient-window {
+  background: #fff;
+  border: 1.5px solid var(--text-primary);
+  padding: 16px 20px;
+}
+.recipient-window .rw-label {
+  font-size: 8.5px; letter-spacing: 1.3px; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 8px;
+}
+.recipient-window .rw-name {
+  font-size: 16px; font-weight: 500; color: var(--text-primary); line-height: 1.2;
+}
+.recipient-window .rw-addr {
+  font-size: 13px; line-height: 1.5; margin-top: 4px;
+  font-variant-numeric: tabular-nums; color: var(--text-primary);
+}
+.recipient-window .tabular { font-variant-numeric: tabular-nums; }
+
+/* the visual fold mark on the back — absolutely positioned at exactly 50% to mirror the front */
+.back-fold {
+  position: absolute;
+  left: -28px; right: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 26px;
+  background-color: #fff;
+  z-index: 5;
+}
+.back-fold::before {
+  content: ''; position: absolute;
+  left: 28px; right: 28px; top: 50%;
+  border-top: 1.5px dashed #15161a;
+  transform: translateY(-50%);
+}
+.back-fold::after {
+  content: ''; position: absolute;
+  left: 28px; right: 28px; top: 50%;
+  border-top: 1px solid rgba(0,0,0,0.18);
+  transform: translateY(-7px);
+}
+.back-fold .scissors {
+  position: absolute; left: 56px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; background: #fff; padding: 0 6px;
+  color: #15161a;
+}
+.back-fold .scissors svg { width: 100%; height: 100%; display: block; }
+.back-fold .fold-mid {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff; padding: 0 12px;
+  font-size: 9.5px; letter-spacing: 1.6px;
+  text-transform: uppercase; color: var(--text-primary); font-weight: 500;
+}
+
+/* BOTTOM HALF of the folded mailer (the visible OUTSIDE — recipient address + GAS) */
+.self-mailer-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding: 6px 8px 4px;
+  align-items: start;
+}
+.recipient-window {
+  background: #fff;
+  border: 1.5px solid var(--text-primary);
+  padding: 22px 26px;
+  position: relative;
+}
+.recipient-window .rw-label {
+  font-size: 9px; letter-spacing: 1.3px; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 10px;
+}
+.recipient-window .rw-name {
+  font-size: 18px; font-weight: 500; color: var(--text-primary); line-height: 1.2;
+}
+.recipient-window .rw-addr {
+  font-size: 14px; line-height: 1.5; margin-top: 6px;
+  font-variant-numeric: tabular-nums; color: var(--text-primary);
+}
+.recipient-window .tabular { font-variant-numeric: tabular-nums; }
+
+/* GAS BLOCK — Geschäftsantwortsendung with WeCollect postage stamp */
+.gas-block {
+  background: #fff;
+  padding: 4px 8px;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Handwritten note + arrow on the left */
+.gas-handnote {
+  display: flex; flex-direction: column; align-items: stretch;
+  color: var(--surface-brand);
+  font-family: 'Caveat', 'Patrick Hand', cursive;
+  max-width: 110px;
+}
+.gas-handnote-text {
+  display: flex; flex-direction: column;
+  font-size: 14px; line-height: 1.15;
+  margin-bottom: 4px;
+  transform: rotate(-3deg) translateX(-2px);
+  transform-origin: bottom left;
+}
+.gas-handnote-text > span:last-child {
+  font-size: 13px;
+}
+.gas-arrow {
+  width: 80px; height: 24px;
+  align-self: flex-end;
+}
+
+/* WeCollect postage stamp */
+.postage-stamp {
+  width: 78px; height: 110px;
+  position: relative;
+  /* Perforated edges using radial gradients */
+  background:
+    radial-gradient(circle 3px at 0 50%, transparent 2.4px, transparent 100%),
+    radial-gradient(circle 3px at 100% 50%, transparent 2.4px, transparent 100%);
+  padding: 4px;
+}
+.postage-stamp .ps-perf {
+  position: absolute; inset: 0;
+  background:
+    /* top edge */
+    radial-gradient(circle 3px, #fff 2.6px, transparent 2.8px) top left/8px 6px repeat-x,
+    /* bottom edge */
+    radial-gradient(circle 3px, #fff 2.6px, transparent 2.8px) bottom left/8px 6px repeat-x,
+    /* left edge */
+    radial-gradient(circle 3px, #fff 2.6px, transparent 2.8px) top left/6px 8px repeat-y,
+    /* right edge */
+    radial-gradient(circle 3px, #fff 2.6px, transparent 2.8px) top right/6px 8px repeat-y;
+  pointer-events: none;
+}
+.postage-stamp .ps-inner {
+  position: relative;
+  width: 100%; height: 100%;
+  background: var(--surface-brand);
+  overflow: hidden;
+}
+.postage-stamp .ps-bg {
+  position: absolute; inset: 0;
+  background-image: url('assets/hero-faces.png');
+  background-size: 180px auto;
+  background-position: -20px -8px;
+  mix-blend-mode: multiply;
+  opacity: 0.75;
+}
+.postage-stamp .ps-wc-logo {
+  position: absolute; left: 6px; top: 6px;
+  background: #fff;
+  color: var(--surface-brand);
+  font-weight: 700;
+  font-size: 7.5px; line-height: 1;
+  padding: 3px 4px 3px;
+  letter-spacing: 0.3px;
+  display: flex; flex-direction: column; gap: 1px;
+}
+.postage-stamp .ps-wc-logo span { display: block; }
+.postage-stamp .ps-vert {
+  position: absolute;
+  right: 4px; top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: center;
+  font-size: 8.5px; font-weight: 500;
+  letter-spacing: 1.4px;
+  color: #fff;
+  white-space: nowrap;
+}
+.postage-stamp .ps-denom {
+  position: absolute;
+  left: 6px; bottom: 16px;
+  color: #fff; font-weight: 500;
+  font-size: 22px; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.postage-stamp .ps-foot {
+  position: absolute;
+  left: 6px; right: 18px; bottom: 4px;
+  display: flex; justify-content: space-between;
+  color: rgba(255,255,255,0.85);
+  font-size: 5.5px; letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+/* Right side: GAS info */
+.gas-info {
+  display: grid; grid-template-rows: auto auto;
+  gap: 6px;
+  font-size: 9px;
+  color: var(--text-primary);
+}
+.gas-info-top {
+  display: grid; grid-template-columns: 56px 1fr;
+  gap: 10px; align-items: start;
+}
+.gas-datamatrix {
+  width: 56px; height: 56px;
+  border: 1px solid var(--surface-divider);
+}
+.gas-label {
+  display: flex; flex-direction: column;
+  font-size: 10px; line-height: 1.35;
+}
+.gas-label strong {
+  font-weight: 500; font-size: 11.5px;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+.gas-info-bottom {
+  display: grid; grid-template-columns: 30px auto 1fr;
+  align-items: center; gap: 10px;
+}
+.gas-bclass {
+  width: 30px; height: 30px;
+  background: var(--text-primary); color: #fff;
+  display: grid; place-items: center;
+  font-size: 22px; font-weight: 500;
+  line-height: 1;
+}
+.gas-permit {
+  display: flex; flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: 11px; line-height: 1.2;
+  font-weight: 500;
+}
+.gas-logos {
+  display: flex; gap: 12px;
+  align-items: center; justify-self: end;
+  color: var(--text-primary);
+}
+.gas-logos .proclima {
+  display: inline-flex; flex-direction: column;
+  align-items: center; line-height: 1; gap: 1px;
+  color: #6a7d8a;
+}
+.gas-logos .proclima em {
+  font-style: italic; font-size: 7px;
+  letter-spacing: 0.4px;
+}
+.gas-logos .diepost {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-sans);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.gas-logos .diepost .cross {
+  width: 13px; height: 13px;
+  background: #f00; position: relative;
+}
+.gas-logos .diepost .cross::before,
+.gas-logos .diepost .cross::after {
+  content: ''; position: absolute; background: #fff;
+}
+.gas-logos .diepost .cross::before {
+  left: 50%; top: 22%; width: 14%; height: 56%; transform: translateX(-50%);
+}
+.gas-logos .diepost .cross::after {
+  top: 50%; left: 22%; height: 14%; width: 56%; transform: translateY(-50%);
+}
+
+/* FOOT */
+.back-foot {
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px;
+  align-items: end;
+}
+.back-foot .back-instr {
+  background: var(--surface-section);
+  padding: 10px 14px;
+  font-size: 10.5px; line-height: 1.5; color: var(--text-body);
+}
+.back-foot .back-instr h4 {
+  margin: 0 0 4px; font-size: 10px; letter-spacing: 1.2px;
+  text-transform: uppercase; font-weight: 500; color: var(--text-primary);
+}
+.back-foot .back-watermark {
+  color: var(--text-muted); font-size: 10px;
+  text-align: right; padding: 8px 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   ANNOTATIONS — dots + popover
+   ============================================================ */
+.annot-dot {
+  position: absolute;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--accent-magenta);
+  color: #fff;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 0 0 3px rgba(235, 1, 165, 0.18), 0 2px 6px rgba(0,0,0,0.18);
+  transition: transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+  transform: translate(-50%, -50%);
+  border: 0;
+}
+.annot-dot:hover, .annot-dot.is-active {
+  transform: translate(-50%, -50%) scale(1.18);
+  box-shadow: 0 0 0 5px rgba(235, 1, 165, 0.28), 0 4px 14px rgba(0,0,0,0.22);
+}
+.annot-dot.is-tour {
+  background: var(--action-primary); color: #15161a;
+  box-shadow: 0 0 0 4px rgba(255, 203, 38, 0.45), 0 4px 14px rgba(0,0,0,0.22);
+  animation: pulse-yellow 1.8s ease-out infinite;
+}
+@keyframes pulse-yellow {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(255, 203, 38, 0.45), 0 4px 14px rgba(0,0,0,0.22); }
+  50%      { box-shadow: 0 0 0 10px rgba(255, 203, 38, 0.0),  0 4px 14px rgba(0,0,0,0.22); }
+}
+
+.bogen-card.no-annots .annot-dot { display: none; }
+
+.annot-pop {
+  position: absolute;
+  z-index: 100;
+  width: 320px;
+  background: #fff;
+  color: var(--text-primary);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.10), 0 22px 50px rgba(0,0,0,0.16);
+  border: 1px solid var(--surface-divider);
+  font-size: 13px; line-height: 1.45;
+  padding: 14px 16px;
+}
+.annot-pop .pop-tag {
+  display: inline-block;
+  font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase;
+  background: var(--accent-magenta); color: #fff;
+  padding: 2px 7px;
+  margin-bottom: 6px;
+}
+.annot-pop h4 {
+  font-size: 15px; line-height: 1.25; font-weight: 500;
+  margin: 0 0 6px;
+}
+.annot-pop p { margin: 0 0 6px; font-size: 12.5px; line-height: 1.45; }
+.annot-pop .lawref {
+  font-family: var(--font-mono); font-size: 11px;
+  background: var(--surface-section);
+  padding: 4px 8px;
+  border-left: 2px solid var(--surface-brand);
+  margin-top: 8px; display: block;
+}
+.annot-pop .close {
+  position: absolute; top: 6px; right: 8px;
+  background: transparent; border: 0; cursor: pointer;
+  font-size: 18px; line-height: 1; color: var(--text-muted);
+  padding: 4px 6px;
+}
+.annot-pop .close:hover { color: var(--text-primary); }
+
+/* ============================================================
+   CONTROL BAR above the bogen
+   ============================================================ */
+.bogen-controls {
+  display: flex; align-items: center; gap: 14px;
+  background: #fff;
+  border: 1px solid var(--surface-divider);
+  box-shadow: var(--shadow-card);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  flex-wrap: wrap;
+}
+.bogen-controls .group { display: flex; align-items: center; gap: 8px; }
+.bogen-controls .sep { width: 1px; height: 24px; background: var(--surface-divider); }
+.bogen-controls .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+.bogen-controls button {
+  background: transparent; border: 1px solid var(--surface-divider);
+  padding: 6px 12px; cursor: pointer; font-size: 13px; font-family: inherit;
+  color: var(--text-primary);
+  transition: background 150ms var(--ease-out);
+}
+.bogen-controls button:hover { background: var(--surface-section); }
+.bogen-controls button.is-active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+.bogen-controls button.is-primary {
+  background: var(--action-primary); border-color: var(--action-primary); color: var(--text-primary);
+  font-weight: 500;
+}
+.bogen-controls button.is-primary:hover { background: #FFD650; }
+
+.toggle {
+  display: inline-flex; align-items: center; gap: 8px;
+  cursor: pointer; user-select: none;
+}
+.toggle .track {
+  width: 36px; height: 20px; background: var(--surface-divider);
+  position: relative; border-radius: 999px;
+  transition: background 150ms;
+}
+.toggle .track::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; background: #fff; border-radius: 50%;
+  transition: transform 150ms var(--ease-out);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle.on .track { background: var(--surface-brand); }
+.toggle.on .track::after { transform: translateX(16px); }
+
+/* ============================================================
+   TOUR banner
+   ============================================================ */
+.tour-banner {
+  position: absolute; left: 0; right: 0; top: -52px;
+  background: #15161a; color: #fff;
+  padding: 8px 14px;
+  display: flex; align-items: center; gap: 14px;
+  font-size: 13px; line-height: 1.3;
+  box-shadow: var(--shadow-card);
+  z-index: 50;
+}
+.tour-banner .step { font-family: var(--font-mono); font-size: 11px; opacity: 0.7; min-width: 78px; }
+.tour-banner .title { font-weight: 500; flex: 1; }
+.tour-banner button {
+  background: transparent; border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; padding: 4px 10px; cursor: pointer;
+  font-family: inherit; font-size: 12px;
+}
+.tour-banner button:hover { background: rgba(255,255,255,0.1); }
+.tour-banner button.exit { border-color: transparent; opacity: 0.7; }
+
+/* ============================================================
+   QR Audio popover (phone mockup)
+   ============================================================ */
+.qr-modal-scrim {
+  position: fixed; inset: 0;
+  background: rgba(20,22,26,0.55);
+  display: grid; place-items: center;
+  z-index: 1000;
+}
+.qr-modal {
+  background: #15161a; color: #fff;
+  width: 320px; max-width: 92vw;
+  border-radius: 32px;
+  padding: 16px;
+  font-family: var(--font-sans);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  position: relative;
+}
+.qr-modal::before {
+  content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 60px; height: 6px; background: #2a2c34; border-radius: 4px;
+}
+.qr-modal .screen {
+  background: #f7f6f1;
+  color: var(--text-primary);
+  border-radius: 18px;
+  margin-top: 16px;
+  padding: 18px 18px 22px;
+}
+.qr-modal .scan-frame {
+  display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: center;
+  padding-bottom: 14px; border-bottom: 1px solid var(--surface-divider);
+}
+.qr-modal .scan-frame .mini-qr {
+  width: 56px; height: 56px; background: #fff; padding: 4px;
+  border: 1px solid var(--text-primary);
+}
+.qr-modal .scan-frame strong { font-size: 13px; display: block; }
+.qr-modal .scan-frame .meta {
+  font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);
+  margin-top: 2px;
+}
+.qr-modal h4 {
+  font-size: 14px; font-weight: 500; margin: 14px 0 6px;
+}
+.qr-modal .transcript {
+  font-size: 13px; line-height: 1.5;
+  background: #fff;
+  padding: 10px 12px;
+  border-left: 3px solid var(--surface-brand);
+}
+.qr-modal .player {
+  background: var(--surface-brand);
+  color: #fff;
+  margin-top: 14px;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: grid; grid-template-columns: 40px 1fr auto; gap: 10px;
+  align-items: center;
+}
+.qr-modal .player .play {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: #fff; color: var(--surface-brand);
+  display: grid; place-items: center; font-size: 14px;
+  cursor: pointer; border: 0;
+}
+.qr-modal .player .bar {
+  height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;
+}
+.qr-modal .player .bar > div {
+  height: 100%; background: var(--action-primary);
+  animation: tickbar 8s linear infinite;
+}
+@keyframes tickbar { from { width: 0; } to { width: 100%; } }
+.qr-modal .player .time { font-family: var(--font-mono); font-size: 11px; }
+.qr-modal .close-modal {
+  position: absolute; top: 16px; right: 18px;
+  background: transparent; color: rgba(255,255,255,0.8);
+  border: 0; cursor: pointer; font-size: 18px;
+}
+
+/* ============================================================
+   MINI-FORM artboard (online personalization)
+   ============================================================ */
+.miniform-frame {
+  background: #fff;
+  width: 100%; height: 100%;
+  display: grid; grid-template-rows: auto 1fr;
+}
+.miniform-head {
+  background: var(--surface-brand); color: #fff;
+  padding: 22px 28px 26px;
+}
+.miniform-head h2 { font-size: 26px; line-height: 1.15; font-weight: 500; margin: 0; }
+.miniform-head p { font-size: 14px; line-height: 1.45; margin: 8px 0 0; color: var(--text-inverse-muted); }
+.miniform-body { padding: 22px 28px; overflow: auto; }
+.miniform-body .step-label {
+  font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--surface-brand); font-weight: 500; margin-bottom: 4px;
+}
+.miniform-body h3 { font-size: 17px; font-weight: 500; margin: 0 0 12px; }
+.miniform-body label {
+  display: block; font-size: 11px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.6px; margin: 12px 0 4px;
+}
+.miniform-body input[type="text"], .miniform-body input[type="email"] {
+  width: 100%; font-family: inherit; font-size: 14px;
+  padding: 9px 12px;
+  border: 1px solid var(--surface-divider);
+  background: var(--surface-base);
+}
+.miniform-body input:focus { outline: 2px solid var(--surface-brand); outline-offset: 0; background: #fff; }
+.miniform-body .row-2 { display: grid; grid-template-columns: 100px 1fr; gap: 12px; }
+.miniform-body .row-2-eq { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.miniform-body .anrede { display: flex; gap: 8px; }
+.miniform-body .anrede button {
+  flex: 1; padding: 8px 12px; cursor: pointer;
+  background: #fff; border: 1px solid var(--surface-divider);
+  font-family: inherit; font-size: 13px;
+}
+.miniform-body .anrede button.on {
+  background: var(--surface-inverse); color: #fff; border-color: var(--surface-inverse);
+}
+.miniform-body .delivery {
+  margin-top: 12px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.miniform-body .delivery label.box {
+  text-transform: none; letter-spacing: 0; color: var(--text-primary);
+  background: var(--surface-base); padding: 12px 14px;
+  border: 1.5px solid var(--surface-divider);
+  cursor: pointer; display: flex; gap: 10px; align-items: flex-start; margin: 0;
+  font-size: 13px; line-height: 1.4;
+}
+.miniform-body .delivery label.box.on {
+  border-color: var(--surface-brand); background: #fff;
+  box-shadow: inset 0 0 0 1px var(--surface-brand);
+}
+.miniform-body .submit {
+  background: var(--action-primary); color: var(--text-primary);
+  font-family: inherit; font-size: 15px; font-weight: 500;
+  padding: 12px 22px; border: 0; cursor: pointer; margin-top: 18px;
+}
+.miniform-body .submit:hover { background: #FFD650; }
+.miniform-body .legal {
+  font-size: 11px; color: var(--text-muted); margin-top: 10px;
+}
+
+/* ============================================================
+   FOLDED SELF-MAILER VIEW
+   ============================================================ */
+.envelope-frame {
+  position: relative; width: 100%; height: 100%;
+  display: grid; place-items: center;
+  background: var(--surface-section);
+  padding: 24px;
+}
+.folded-mailer {
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+}
+.fm-sheet {
+  /* Folded A4 portrait → A5 landscape proportions: 210 × 148.5 mm */
+  width: 540px; height: 380px;
+  background: #fff;
+  border: 1px solid var(--surface-divider);
+  box-shadow: var(--shadow-card-hover);
+  position: relative;
+  overflow: hidden;
+}
+/* The fold runs along the TOP edge of this folded view */
+.fm-fold-edge {
+  position: absolute; left: 0; right: 0; top: 0;
+  height: 4px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.16), rgba(0,0,0,0.02));
+}
+.fm-fold-edge::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -2px;
+  border-top: 1px solid rgba(0,0,0,0.10);
+}
+/* The tape strip along the BOTTOM (open) edge */
+.fm-tape {
+  position: absolute; left: -10px; right: -10px; bottom: 12px;
+  height: 32px;
+  background: rgba(255, 255, 220, 0.55);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  transform: rotate(-0.7deg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; letter-spacing: 1.4px; text-transform: uppercase;
+  color: rgba(120, 120, 90, 0.7);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.fm-tape::before, .fm-tape::after {
+  content: '';
+  position: absolute; top: 0; bottom: 0; width: 12px;
+  background: repeating-linear-gradient(45deg,
+    rgba(0,0,0,0.06) 0, rgba(0,0,0,0.06) 1px,
+    transparent 1px, transparent 4px);
+}
+.fm-tape::before { left: 0; }
+.fm-tape::after  { right: 0; }
+.fm-tape span { background: rgba(255, 255, 235, 0.6); padding: 2px 10px; }
+
+.fm-content {
+  position: absolute; left: 32px; right: 32px; top: 92px;
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start;
+}
+.fm-recipient {
+  background: #fff; border: 1.5px solid var(--text-primary);
+  padding: 18px 22px;
+}
+.fm-rw-label { font-size: 8.5px; letter-spacing: 1.3px; color: var(--text-muted); text-transform: uppercase; }
+.fm-rw-name  { font-size: 17px; font-weight: 500; line-height: 1.2; margin-top: 8px; color: var(--text-primary); }
+.fm-rw-addr  { font-size: 13px; line-height: 1.5; margin-top: 4px; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.fm-rw-addr .tabular { font-variant-numeric: tabular-nums; }
+
+.fm-gas-wrap {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+  background: #fff;
+  padding: 8px 10px;
+  border: 1px solid var(--surface-divider);
+}
+.fm-gas-info {
+  display: flex; flex-direction: column;
+  font-size: 11px; line-height: 1.4;
+  color: var(--text-primary);
+}
+.fm-gas-info strong {
+  font-weight: 500; font-size: 11.5px;
+  letter-spacing: 0.6px; margin-bottom: 3px;
+}
+
+.fm-sender {
+  position: absolute; left: 32px; top: 20px;
+  font-size: 9px; color: var(--text-muted); line-height: 1.45;
+}
+.fm-sender .k {
+  display: block;
+  font-size: 8px; text-transform: uppercase; letter-spacing: 1.2px;
+  margin-bottom: 2px;
+}
+.fm-sender .tabular { font-variant-numeric: tabular-nums; }
+
+.fm-mark {
+  position: absolute; right: 32px; top: 22px;
+  width: 36px; height: 36px; opacity: 0.85;
+}
+
+.envelope-caption {
+  text-align: center;
+  font-size: 12px; line-height: 1.5; color: var(--text-body);
+  max-width: 480px;
+}
+.envelope-caption strong { font-weight: 500; color: var(--text-primary); }
+
+/* Fold-step 3: add tape strip */
+.fold-step .vis.s3 .tape {
+  position: absolute; left: -4px; right: -4px; bottom: 20px;
+  height: 16px;
+  background: rgba(255,255,220,0.55);
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transform: rotate(-0.8deg);
+}
+
+/* Fold diagram */
+.fold-diagram {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  padding: 32px; width: 100%; height: 100%; align-items: center;
+  background: #fff;
+}
+.fold-step { display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; }
+.fold-step .nr {
+  width: 28px; height: 28px; background: var(--surface-brand); color: #fff;
+  display: grid; place-items: center; border-radius: 50%; font-weight: 500;
+}
+.fold-step .vis {
+  width: 160px; height: 220px; /* portrait! */
+  background: #fff;
+  border: 1px solid var(--surface-divider);
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.fold-step .vis.s1::before {
+  content: ''; position: absolute; left: 6px; right: 6px; top: 50%;
+  border-top: 1.5px dashed #15161a;
+}
+.fold-step .vis.s1 .top-content,
+.fold-step .vis.s1 .bot-content {
+  position: absolute; left: 12px; right: 12px;
+  font-size: 9px; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+}
+.fold-step .vis.s1 .top-content { top: 16px; bottom: 50%; padding-bottom: 6px; }
+.fold-step .vis.s1 .bot-content { top: 50%; bottom: 16px; padding-top: 6px; background: rgba(0,120,200,0.05); }
+.fold-step .vis.s2 .fold-half {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 50%; background: #f7f6f1;
+  border-top: 1px solid var(--surface-divider);
+  transform-origin: top;
+  animation: fold-down 2.4s ease-in-out infinite alternate;
+  display: grid; place-items: center;
+  font-size: 9px; color: var(--text-muted);
+}
+@keyframes fold-down {
+  from { transform: rotateX(0deg); }
+  to   { transform: rotateX(178deg); }
+}
+.fold-step .vis.s3 .win {
+  position: absolute; left: 16px; top: 60px;
+  width: 100px; height: 32px;
+  background: rgba(0,120,200,0.06); border: 1px dashed rgba(0,120,200,0.4);
+}
+.fold-step .vis.s3 .stm {
+  position: absolute; right: 14px; top: 16px;
+  width: 28px; height: 36px; background: #f7f6f1; border: 1px solid var(--surface-divider);
+}
+.fold-step h4 { font-size: 14px; font-weight: 500; margin: 0; }
+.fold-step p { font-size: 12px; color: var(--text-muted); margin: 0; max-width: 200px; line-height: 1.4; }
+
+/* Misc */
+.handwritten { font-family: 'Caveat', 'Patrick Hand', cursive; }
+.muted { color: var(--text-muted); }

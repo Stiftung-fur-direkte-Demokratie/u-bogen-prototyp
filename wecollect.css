@@ -1,0 +1,165 @@
+/* =============================================================
+   WeCollect Design System — Tokens & Base Typography
+   Source: wecollect.ch (live site), Mai 2026
+   ============================================================= */
+
+/* Self-hosted woff2 — same files the live site uses */
+@font-face {
+  font-family: 'Fira Sans';
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url('fonts/Fira_Sans-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fira Sans';
+  font-style: normal; font-weight: 500; font-display: swap;
+  src: url('fonts/Fira_Sans-500.woff2') format('woff2');
+}
+/* Fira Code via Google (live site uses it only for very small mono blocks) */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400&display=swap');
+
+/* Font Awesome 6 (Free + Brands) self-hosted */
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal; font-weight: 900; font-display: swap;
+  src: url('fonts/fa-solid-900.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Font Awesome 6 Brands';
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url('fonts/fa-brands-400.woff2') format('woff2');
+}
+
+:root {
+  /* ---------- Surfaces ----------
+     The brand is a TWO-MODE system:
+       1. Light content: --surface-base (warm off-white) / --surface-section (one shade lighter beige)
+       2. Brand: --surface-brand (blue) for header strip, hero, and footer
+     Anthracite (--surface-inverse) is reserved for the project-card image overlay pill and
+     other small "stamp" moments, NOT for hero or footer.
+  */
+  --surface-base: #F5F5F4;          /* warm off-white body */
+  --surface-section: #EFEEEA;       /* one shade off — section break "alt" tone */
+  --surface-brand: #0078C8;         /* THE blue: header strip, hero, footer */
+  --surface-brand-deep: #0A4E84;    /* deeper blue used inside the hero illustration */
+  --surface-inverse: #14161A;       /* anthracite — pill overlays, deep stamps */
+  --surface-divider: #E2E2DE;       /* hairlines */
+  --surface-white: #FFFFFF;         /* inputs, cards (cards sit on --surface-section) */
+
+  /* ---------- Text ---------- */
+  --text-primary: #1F1F1B;       /* heavy near-black for bold headlines */
+  --text-body:    #2B2B26;       /* slightly softer for body */
+  --text-inverse: #FFFFFF;
+  --text-muted:   #606157;
+  --text-inverse-muted: rgba(255, 255, 255, 0.85);
+
+  /* ---------- Action & Accent ---------- */
+  --action-primary: #FFCB26;          /* the one yellow that says "click me" */
+  --action-link: #0078C8;             /* identical to brand blue — links inherit the mark colour */
+  --action-link-hover: #005FA0;
+  --accent-magenta: #EB01A5;          /* used sparingly; NOT for status pills (those are black) */
+
+  /* ---------- Elevation ---------- */
+  --shadow-card: 0 2px 6px rgba(20, 30, 50, 0.06), 0 8px 24px rgba(20, 30, 50, 0.06);
+  --shadow-card-hover: 0 4px 10px rgba(20, 30, 50, 0.08), 0 16px 32px rgba(20, 30, 50, 0.10);
+
+  /* ---------- Typography ---------- */
+  --font-sans: "Fira Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Fira Code", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Type scale (Desktop ≥ 768px) */
+  --fs-display: 72px;   --lh-display: 90px;
+  --fs-h1:      48px;   --lh-h1:      60px;
+  --fs-h2:      48px;   --lh-h2:      60px;
+  --fs-h3:      21px;   --lh-h3:      26px;
+  --fs-body:    19px;   --lh-body:    28.5px;
+  --fs-meta:    17px;   --lh-meta:    24px;
+  --fs-cta:     16px;   --lh-cta:     24px;
+
+  /* ---------- Spacing — 4px grid ---------- */
+  --space-0:   0;
+  --space-xs:  4px;
+  --space-s:   8px;
+  --space-sm:  12px;
+  --space-m:   16px;
+  --space-l:   24px;
+  --space-xl:  40px;   /* 32 also lives here for card-gap */
+  --space-2xl: 80px;
+  --space-3xl: 112px;
+  --space-4xl: 160px;
+
+  /* Containers */
+  --container-narrow:  720px;
+  --container-default: 1080px;
+  --container-wide:    1280px;
+
+  /* ---------- Radii ---------- */
+  --radius-s: 3px;
+  --radius-m: 6px;
+  --radius-l: 12px;
+
+  /* ---------- Motion ---------- */
+  --ease-out: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 250ms;
+}
+
+/* =============================================================
+   Semantic element styles — apply to bare tags
+   ============================================================= */
+
+html { font-family: var(--font-sans); color: var(--text-primary); background: var(--surface-base); }
+body { font-size: var(--fs-body); line-height: var(--lh-body); font-weight: 400; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 500;            /* Live site maxes out at Fira Sans 500 — large sizes do the visual heavy-lifting */
+  letter-spacing: normal;
+  color: inherit;
+  margin: 0;
+}
+h1 { font-size: var(--fs-h1); line-height: var(--lh-h1); }
+h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); }
+h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); }
+
+.display, .hero h1 {
+  font-size: var(--fs-display); line-height: var(--lh-display); font-weight: 500;
+}
+
+p   { font-size: var(--fs-body); line-height: var(--lh-body); margin: 0; }
+.meta, small { font-size: var(--fs-meta); line-height: var(--lh-meta); color: var(--text-muted); }
+code, kbd, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+a { color: var(--action-link); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { color: var(--action-link-hover); }
+
+/* Counter numerals never zappeln */
+.counter, .tabular { font-variant-numeric: tabular-nums; }
+
+/* Focus — visible everywhere, in action-link blue */
+:focus-visible {
+  outline: 3px solid var(--action-link);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Mobile scale */
+@media (max-width: 640px) {
+  :root {
+    --fs-display: 40px; --lh-display: 48px;
+    --fs-h1: 32px;      --lh-h1: 40px;
+    --fs-h2: 32px;      --lh-h2: 40px;
+    --fs-h3: 20px;      --lh-h3: 26px;
+    --fs-body: 17px;    --lh-body: 26px;
+  }
+}
+
+/* Reduced motion — kill all transitions/animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

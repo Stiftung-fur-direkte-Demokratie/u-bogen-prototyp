@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>U-Bogen Druckvorlage · Mobilitätsbon-Initiative</title>
+
+  <link rel="icon" href="assets/wecollect-logo.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&display=swap"/>
+
+  <link rel="stylesheet" href="wecollect.css"/>
+  <link rel="stylesheet" href="fontawesome.css"/>
+  <link rel="stylesheet" href="styles.css"/>
+
+  <style>
+    @page {
+      size: 210mm 297mm;
+      margin: 0;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      background: #efeeea;
+      font-family: var(--font-sans);
+    }
+    .print-toolbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: #15161a; color: #fff;
+      padding: 12px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+    .print-toolbar h1 {
+      font-size: 15px; font-weight: 500; margin: 0; color: #fff;
+    }
+    .print-toolbar h1 small { color: rgba(255,255,255,0.7); font-weight: 400; margin-left: 8px; }
+    .print-toolbar .actions { display: flex; gap: 10px; }
+    .print-toolbar button {
+      background: var(--action-primary); color: var(--text-primary);
+      border: 0; padding: 8px 16px;
+      font-size: 14px; font-weight: 500; cursor: pointer;
+      font-family: inherit;
+    }
+    .print-toolbar button:hover { background: #FFD650; }
+    .print-toolbar button.secondary {
+      background: transparent; color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .print-toolbar button.secondary:hover { background: rgba(255,255,255,0.1); }
+
+    .print-stack {
+      padding: 80px 24px 24px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 28px;
+    }
+    .print-page {
+      width: 210mm;
+      height: 297mm;
+      background: #fff;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 8px 24px rgba(20,30,50,0.10), 0 28px 70px rgba(20,30,50,0.12);
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+    }
+    .print-page:last-child { page-break-after: auto; }
+    .print-page-label {
+      position: absolute; left: -130px; top: 24px;
+      width: 110px; text-align: right;
+      font-size: 12px; color: var(--text-muted);
+      letter-spacing: 0.6px; text-transform: uppercase;
+    }
+
+    /* Override the .bogen-card / .bogen-face 3D/flip CSS for static print rendering */
+    .print-page .bogen-card {
+      position: absolute !important;
+      inset: 0 !important;
+      transform: none !important;
+      transform-style: flat !important;
+      transition: none !important;
+      filter: none !important;
+      box-shadow: none !important;
+    }
+    .print-page .bogen-face {
+      position: absolute !important;
+      inset: 0 !important;
+      transform: none !important;
+      backface-visibility: visible !important;
+      -webkit-backface-visibility: visible !important;
+      box-shadow: none !important;
+    }
+    .print-page .bogen-face::before { content: none !important; }
+    /* Show one face per page */
+    .print-page--front .bogen-face--back { display: none !important; }
+    .print-page--back  .bogen-face--front { display: none !important; }
+
+    /* PRINT MEDIA: hide chrome, ensure each .print-page is exactly one A4 sheet */
+    @media print {
+      html, body {
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 210mm;
+      }
+      .print-toolbar, .print-page-label { display: none !important; }
+      .print-stack {
+        padding: 0 !important;
+        gap: 0 !important;
+        display: block !important;
+      }
+      .print-page {
+        box-shadow: none !important;
+        margin: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        page-break-after: always;
+        page-break-inside: avoid;
+        break-after: page;
+        break-inside: avoid;
+        overflow: hidden;
+      }
+      .print-page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+    }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="print-toolbar">
+    <h1>U-Bogen · Druckvorlage <small>Mobilitätsbon-Initiative · A4 Hochformat, 2 Seiten</small></h1>
+    <div class="actions">
+      <button class="secondary" onclick="window.location.href = 'U-Bogen Prototyp.html'">← Zurück zum Prototyp</button>
+      <button onclick="window.print()">Als PDF drucken / speichern</button>
+    </div>
+  </div>
+
+  <div class="print-stack">
+    <div class="print-page print-page--front">
+      <span class="print-page-label">Seite 1<br/>Schreibseite</span>
+      <div id="front-root"></div>
+    </div>
+    <div class="print-page print-page--back">
+      <span class="print-page-label">Seite 2<br/>Versandseite</span>
+      <div id="back-root"></div>
+    </div>
+  </div>
+
+  <script type="text/babel" src="data.jsx"></script>
+  <script type="text/babel" src="annotations-data.jsx"></script>
+  <script type="text/babel" src="elements.jsx"></script>
+  <script type="text/babel" src="bogen-front.jsx"></script>
+  <script type="text/babel" src="bogen-back.jsx"></script>
+  <script type="text/babel">
+    // Blank profile — no personal data preprinted, no Bogen-ID either
+    const blank = {
+      salutation: '',
+      firstName: '',
+      lastName: '',
+      birthDate: '',
+      street: '',
+      plz: '',
+      municipality: '',
+      canton: '',
+      bogenId: '____-____-____-____',
+    };
+
+    // Each page wraps a bogen-card so the existing CSS targets work; the
+    // 3D-transform rules are flattened by .print-page overrides above.
+    const FrontPage = () => (
+      <div className="bogen-stack" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
+        <div className="bogen-card no-prefill no-annots">
+          <BogenFront profile={blank} prefill={false} showAnnots={false} onQRScan={() => {}} />
+        </div>
+      </div>
+    );
+    const BackPage = () => (
+      <div className="bogen-stack" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
+        <div className="bogen-card no-prefill no-annots">
+          <BogenBack profile={blank} showAnnots={false} onQRScan={() => {}} />
+        </div>
+      </div>
+    );
+
+    ReactDOM.createRoot(document.getElementById('front-root')).render(<FrontPage/>);
+    ReactDOM.createRoot(document.getElementById('back-root')).render(<BackPage/>);
+  </script>
+</body>
+</html>

@@ -16,13 +16,17 @@
 
   <style>
     @page {
-      size: 210mm 297mm;
+      size: A4 portrait;
       margin: 0;
     }
+    @page :first { margin: 0; }
+    @page :left   { margin: 0; }
+    @page :right  { margin: 0; }
     html, body {
       margin: 0; padding: 0;
       background: #efeeea;
       font-family: var(--font-sans);
+      box-sizing: border-box;
     }
     .print-toolbar {
       position: fixed; top: 0; left: 0; right: 0;
@@ -135,10 +139,11 @@
   <div class="print-toolbar">
     <h1>U-Bogen · Druckvorlage <small id="toolbar-subtitle">Mobilitätsbon-Initiative · A4 Hochformat, 2 Seiten</small></h1>
     <div class="actions">
+      <span style="color: rgba(255,255,255,0.6); font-size: 12px; margin-right: 6px;">Im Druck-Dialog: <strong style="color:#FFCB26;">A4</strong>, Ränder <strong style="color:#FFCB26;">Keine</strong></span>
       <select id="profile-select" style="background: #2a2c34; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 7px 12px; font-family: inherit; font-size: 13px; cursor: pointer; border-radius: 0;">
         <option value="blank">Blanko (zum Ausfüllen)</option>
       </select>
-      <button class="secondary" onclick="window.location.href = 'U-Bogen Prototyp.html'">← Zurück zum Prototyp</button>
+      <button class="secondary" onclick="window.location.href = 'index.html'">← Zurück zum Prototyp</button>
       <button onclick="window.print()">Als PDF drucken / speichern</button>
     </div>
   </div>

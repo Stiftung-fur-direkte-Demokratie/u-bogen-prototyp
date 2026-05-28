@@ -191,28 +191,31 @@ function QRAudioModal({ open, side, bogenId, onClose }) {
   if (!open) return null;
   const isFront = side === 'front';
   const transcript = isFront
-    ? 'Sie halten den Bogen mit der Schreibseite oben. Oberhalb der ertastbaren Faltkante schreiben Sie Ihren Namen und Vornamen. Unterhalb der Faltkante unterzeichnen Sie. Alle anderen Angaben sind bereits korrekt vorgedruckt.'
-    : 'Sie halten den Bogen auf der Rückseite. Bitte drehen Sie das Blatt um. Auf der anderen Seite finden Sie zuerst Ihre vorgedruckten Personendaten, danach die Schreibzone für Name und Unterschrift.';
+    ? 'Sie halten den Bogen mit der Schreibseite oben im Hochformat mit dem QR-Code oben links, was korrekt ist. Falten Sie nun das Blatt so, indem Sie die Unterkante des A4-Blatts nach oben falten und so das Blatt halbieren. Öffnen Sie nun das gefaltete Blatt wieder so, dass Sie ein A4-Blatt mit einem horizontalen Falt in der Mitte haben, den Sie zur Orientierung mit Ihren Fingern ertasten können. Oberhalb der ertastbaren Faltkante schreiben Sie Ihren Vor- und Nachnamen – Sie haben ca. 3 bis 4 Fingerbreit in der Höhe Platz. Unterhalb der Faltkante unterzeichnen Sie mit Ihrer Unterschrift. Alle anderen Angaben sind bereits korrekt vorgedruckt. Sie können das PDF zusätzlich mit einem Screenreader auf die korrekten Inhalte prüfen.'
+    : 'Sie halten den Bogen auf der Rückseite – das ist die Versandseite. Auf dieser Seite finden Sie die Empfänger-Adresse des Initiativkomitees sowie den Stempel der Geschäftsantwortsendung; Sie brauchen daher keine Briefmarke. Nachdem Sie auf der Vorderseite Ihren Vor- und Nachnamen geschrieben und unterzeichnet haben, falten Sie den Bogen entlang der ertastbaren Faltkante in der Mitte, sodass die Schreibseite innen liegt. Kleben Sie die offene Kante mit einem Stück Tesafilm zu – so bleiben Ihre Personendaten geschützt. Werfen Sie den gefalteten Bogen anschliessend in den nächsten Briefkasten. Die Post stellt den Bogen dem Initiativkomitee zu, das die Stimmrechtsbescheinigung bei Ihrer Gemeinde einholt.';
   return (
     <div className="qr-modal-scrim" onClick={onClose} role="dialog" aria-label="Audio-Anleitung">
       <div className="qr-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="close-modal" onClick={onClose} aria-label="Schliessen">×</button>
+        <div className="modal-head">
+          <h3>Audio-Anleitung <small>{isFront ? 'Vorderseite' : 'Rückseite'}</small></h3>
+          <button className="close-modal" onClick={onClose} aria-label="Schliessen">×</button>
+        </div>
         <div className="screen">
           <div className="scan-frame">
-            <div className="mini-qr"><QRCode size={48} seed={side + '-' + bogenId}/></div>
+            <div className="mini-qr"><QRCode size={64} seed={side + '-' + bogenId}/></div>
             <div>
               <strong>{isFront ? 'VORDERSEITE OBEN' : 'RÜCKSEITE – bitte umdrehen'}</strong>
               <div className="meta">{bogenId}</div>
             </div>
           </div>
-          <h4>Audio-Anleitung</h4>
+          <h4>Gesprochene Anleitung</h4>
           <div className="transcript">{transcript}</div>
           <div className="player">
             <button className="play" aria-label="Wiedergabe"><i className="fa-solid fa-play"></i></button>
             <div className="bar"><div></div></div>
-            <span className="time">0:08</span>
+            <span className="time">0:24</span>
           </div>
-          <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: '12px 0 0', lineHeight: 1.4 }}>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '14px 0 0', lineHeight: 1.5 }}>
             Demo · in der Pilotphase ausgespielt über wecollect.ch/bogen-anleitung
           </p>
         </div>

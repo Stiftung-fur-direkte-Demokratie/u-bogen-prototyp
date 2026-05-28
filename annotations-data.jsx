@@ -3,10 +3,11 @@
 // top/left in % of the bogen face. The portrait sheet is 794×1123 px.
 
 const ANNOTATIONS_FRONT = [
-  // ─── TOP STRIP ────────────────────────────────────────────────
+  // Positions measured from real element centers; small offsets to keep dots
+  // off important text content. Format: top/left = % of bogen face.
   {
     id: 'qr-front',
-    n: 1, top: 6, left: 8, side: 'right',
+    n: 1, top: 4, left: 13, side: 'right',
     tag: 'QR · Audio-Anleitung',
     title: 'QR-Code «Vorderseite oben»',
     body: [
@@ -17,7 +18,7 @@ const ANNOTATIONS_FRONT = [
   },
   {
     id: 'title',
-    n: 2, top: 6, left: 44, side: 'below',
+    n: 2, top: 4, left: 28, side: 'right',
     tag: 'Pflichtangabe',
     title: 'Initiative-Titel und BBl-Datum',
     body: [
@@ -28,7 +29,7 @@ const ANNOTATIONS_FRONT = [
   },
   {
     id: 'deadline',
-    n: 3, top: 3, left: 85, side: 'left',
+    n: 3, top: 4, left: 95, side: 'left',
     tag: 'Sammelfrist',
     title: 'Ablauf Sammelfrist (18 Monate)',
     body: [
@@ -39,7 +40,7 @@ const ANNOTATIONS_FRONT = [
   },
   {
     id: 'bogen-id',
-    n: 4, top: 9, left: 85, side: 'left',
+    n: 4, top: 9, left: 95, side: 'left',
     tag: 'Pilot',
     title: 'Eindeutige Bogen-ID',
     body: [
@@ -48,10 +49,9 @@ const ANNOTATIONS_FRONT = [
     ],
     lawref: 'Konzept v0.4 · §9 · DSG Art. 5 lit. c',
   },
-  // ─── INITIATIVE TEXT ──────────────────────────────────────────
   {
     id: 'legal-preamble',
-    n: 5, top: 22, left: 50, side: 'right',
+    n: 5, top: 18, left: 4, side: 'right',
     tag: 'Pflichttext',
     title: 'Vollständiger Initiativtext',
     body: [
@@ -60,36 +60,45 @@ const ANNOTATIONS_FRONT = [
     ],
     lawref: 'Art. 68 Abs. 1 lit. b/d BPR',
   },
-  // ─── VORGEDRUCKTE PERSONENDATEN ───────────────────────────────
   {
     id: 'preprint-band',
-    n: 6, top: 36, left: 24, side: 'below',
+    n: 6, top: 26, left: 4, side: 'right',
     tag: 'Kernidee',
     title: 'Vorgedruckte Personendaten',
     body: [
-      'Vorname, Nachname, Geburtsdatum, Wohnadresse, Politische Gemeinde und Kanton werden im Online-Formular erfasst und vorgedruckt.',
+      'Geburtsdatum und Wohnadresse werden im Online-Formular erfasst und vorgedruckt.',
       'Das ist erlaubt – diese Angaben dürfen handschriftlich, maschinell oder digital ausgefüllt werden. Sie müssen NICHT eigenhändig sein.',
+      'Rechts in der Box gibt es ein leeres Kontrollfeld, das die prüfende Amtsstelle bei Bedarf von Hand ausfüllen kann.',
       'Personen mit Tremor oder Sehbehinderung leisten so nur noch das gesetzliche Minimum von Hand.',
     ],
     lawref: 'Art. 61 Abs. 2 BPR · Broschüre Stimmrechtsbescheinigung 2025, S. 12',
   },
-  // ─── NAME ZONE ────────────────────────────────────────────────
   {
     id: 'name-zone',
-    n: 7, top: 44, left: 50, side: 'right',
+    n: 7, top: 39, left: 4, side: 'right',
     tag: 'Eigenhändig',
     title: 'Schreibzone Vorname + Nachname',
     body: [
       'Über die ganze Bogenbreite, ca. 25 mm hoch. Hochkontrastig, ohne Pastellton.',
       'Vorname und Nachname MÜSSEN eigenhändig und leserlich geschrieben sein – andere Pflichtfelder dürfen vorgedruckt sein.',
-      'Bei Schreibunfähigkeit übernimmt eine stimmberechtigte Person mit dem Zusatz «im Auftrag» (Art. 18a VPR).',
     ],
-    lawref: 'Art. 61 Abs. 1 BPR · Art. 18a VPR',
+    lawref: 'Art. 61 Abs. 1 BPR',
   },
-  // ─── FOLD MARK ────────────────────────────────────────────────
+  {
+    id: 'art-18a',
+    n: 8, top: 39, left: 95, side: 'left',
+    tag: 'Schreibunfähigkeit · Art. 18a VPR',
+    title: 'Unterzeichnung für schreibunfähige Stimmberechtigte',
+    body: [
+      'Stimmberechtigte, die ein Begehren für andere, schreibunfähige Stimmberechtigte unterzeichnen, tragen deren Personalien vollständig in die Unterschriftenliste ein.',
+      'In der Rubrik «eigenhändige Unterschrift» tragen sie in Blockschrift samt dem Hinweis «im Auftrag / i.A.» ihren eigenen Namen ein und fügen ihre eigene Unterschrift bei.',
+      'Die rotierte Checkbox rechts an der Namensbox markiert diesen Sonderfall.',
+    ],
+    lawref: 'Art. 18a VPR',
+  },
   {
     id: 'fold-mark',
-    n: 8, top: 50, left: 30, side: 'left',
+    n: 9, top: 50, left: 4, side: 'right',
     tag: 'Taktile Faltmarke',
     title: 'Faltkante als Orientierungsanker',
     body: [
@@ -99,33 +108,31 @@ const ANNOTATIONS_FRONT = [
     ],
     lawref: 'Konzept v0.4 · §4 / §5.2',
   },
-  // ─── SIGNATURE ZONE ───────────────────────────────────────────
   {
     id: 'sig-zone',
-    n: 9, top: 62, left: 50, side: 'right',
+    n: 10, top: 62, left: 4, side: 'right',
     tag: 'Eigenhändig',
     title: 'Eigenhändige Unterschrift',
     body: [
-      'Volle Bogenbreite, ca. 30 mm hoch. Auch bei Tremor oder grobmotorischen Einschränkungen liesse sich darauf bequem unterschreiben.',
+      'Volle Bogenbreite, ca. 30 mm hoch. Auch bei Tremor oder grobmotorischen Einschränkungen bequem nutzbar.',
       'Die Unterschrift ist – wie der Name – immer eigenhändig zu leisten.',
     ],
     lawref: 'Art. 61 Abs. 1 BPR',
   },
-  // ─── BESCHEINIGUNG & KOMITEE ─────────────────────────────────
   {
     id: 'bescheinigung',
-    n: 10, top: 89, left: 28, side: 'above',
-    tag: 'Gemeinde-Workflow',
+    n: 11, top: 84, left: 4, side: 'right',
+    tag: 'Amtsstelle',
     title: 'Stimmrechtsbescheinigung',
     body: [
-      'Die Gemeinde trägt Ort, Datum, Unterschrift und Amtsstempel ein – wie bei jedem klassischen Bogen.',
-      '«Anzahl: 1» ist vorbedruckt: ein personalisierter Einzelfaltbogen entspricht genau einer Person.',
+      'Die Stimmrechtsbescheinigung wird durch das Initiativkomitee eingeholt – nicht durch die unterzeichnende Person.',
+      'Die zuständige Amtsperson trägt die Anzahl (leer gelassen, von Hand auszufüllen), Ort, eigenhändige Unterschrift, Datum, amtliche Eigenschaft und den Amtsstempel ein.',
     ],
     lawref: 'Art. 62 BPR · VPR Art. 19',
   },
   {
     id: 'komitee',
-    n: 11, top: 89, left: 76, side: 'above',
+    n: 12, top: 84, left: 95, side: 'left',
     tag: 'Pflichtangabe',
     title: 'Initiativkomitee',
     body: [
@@ -139,7 +146,7 @@ const ANNOTATIONS_FRONT = [
 const ANNOTATIONS_BACK = [
   {
     id: 'qr-back',
-    n: 1, top: 6, left: 94, side: 'left',
+    n: 1, top: 8, left: 13, side: 'right',
     tag: 'QR · Versandseite',
     title: 'QR-Code «Rückseite – bitte umdrehen»',
     body: [
@@ -150,7 +157,7 @@ const ANNOTATIONS_BACK = [
   },
   {
     id: 'hinweis-unterzeichnende',
-    n: 2, top: 22, left: 84, side: 'below',
+    n: 2, top: 22, left: 16, side: 'below',
     tag: 'Hinweis · Unterzeichnende',
     title: 'Anleitung für Sie',
     body: [
@@ -170,7 +177,7 @@ const ANNOTATIONS_BACK = [
   },
   {
     id: 'hinweis-bk',
-    n: 4, top: 22, left: 16, side: 'below',
+    n: 4, top: 22, left: 84, side: 'below',
     tag: 'Hinweis · Bundeskanzlei',
     title: 'Schlusskontrolle',
     body: [
@@ -190,7 +197,7 @@ const ANNOTATIONS_BACK = [
   },
   {
     id: 'sender',
-    n: 6, top: 63, left: 76, side: 'right',
+    n: 6, top: 63, left: 24, side: 'right',
     tag: 'Absender:in',
     title: 'Ihre Absender-Angaben',
     body: [
@@ -199,7 +206,7 @@ const ANNOTATIONS_BACK = [
   },
   {
     id: 'gas',
-    n: 7, top: 65, left: 28, side: 'left',
+    n: 7, top: 65, left: 72, side: 'left',
     tag: 'Geschäftsantwortsendung',
     title: 'GAS-Stempel der Schweizerischen Post',
     body: [
@@ -210,7 +217,7 @@ const ANNOTATIONS_BACK = [
   },
   {
     id: 'recipient',
-    n: 8, top: 80, left: 28, side: 'left',
+    n: 8, top: 80, left: 72, side: 'left',
     tag: 'Empfänger',
     title: 'Adresse des Komitees',
     body: [

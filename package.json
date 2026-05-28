@@ -1,0 +1,13 @@
+{
+  "name": "u-bogen-prototyp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Barrierefreier Einzelfaltbogen — interaktiver HTML-Prototyp aus Claude Design.",
+  "scripts": {
+    "start": "http-server -p 8000 -c-1 -o",
+    "dev": "http-server -p 8000 -c-1 -o"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

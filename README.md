@@ -7,8 +7,15 @@ Barrierefreier Einzelfaltbogen — interaktiver HTML-Prototyp aus Claude Design.
 Da die JSX-Dateien per `<script type="text/babel">` zur Laufzeit kompiliert werden, muss die Seite über einen HTTP-Server geöffnet werden (nicht direkt per `file://`):
 
 ```bash
+npm install
+npm start
+# öffnet http://localhost:8000/ im Browser
+```
+
+Alternativ ohne Node:
+
+```bash
 python3 -m http.server 8000
-# dann http://localhost:8000/ öffnen
 ```
 
 ## Deployment

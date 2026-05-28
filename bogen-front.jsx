@@ -1,7 +1,7 @@
 /* eslint-disable */
 // Vorderseite (Schreibseite) — A4 portrait. Fold horizontally in the middle.
 
-function BogenFront({ profile, prefill = true, showAnnots = true, activeAnnotId, onAnnotActivate, tourId, onQRScan }) {
+function BogenFront({ profile, prefill = true, printMode = false, showAnnots = true, activeAnnotId, onAnnotActivate, tourId, onQRScan }) {
   const I = window.INITIATIVE;
   const committee = [
     'Barbara Antonioli Mantegazzini, Lugano', 'Kathrin Bertschy, Bern', 'Florence Brenzikofer, Oltingen',
@@ -43,6 +43,7 @@ function BogenFront({ profile, prefill = true, showAnnots = true, activeAnnotId,
               <span className="deadline">Ablauf Sammelfrist: {I.deadline}</span>
               <span className="bbl">Im Bundesblatt: {I.bblDate}</span>
               <span className="bogen-id">Bogen-ID: {profile.bogenId}</span>
+              <span className="gemeinde-meta">Politische Gemeinde: {profile.municipality} · Kanton: {profile.canton}</span>
             </div>
           </div>
 
@@ -65,34 +66,48 @@ function BogenFront({ profile, prefill = true, showAnnots = true, activeAnnotId,
           {/* VORGEDRUCKTE PERSONENDATEN — box only (heading entfernt für mehr Höhe unten) */}
           <div className="preprint-section">
             <div className="preprint-band">
-              <div className="preprint-fields">
-                <div className="f"><span className="k">Vorname</span><span className="v">{profile.firstName}</span></div>
-                <div className="f"><span className="k">Name</span><span className="v">{profile.lastName}</span></div>
-                <div className="f"><span className="k">Geburtsdatum</span><span className="v">{profile.birthDate}</span></div>
-                <div className="f f-wide">
-                  <span className="k">Wohnadresse · Politische Gemeinde · Kanton</span>
+              <div className="preprint-fields preprint-fields--single">
+                <div className="f f-inline">
+                  <span className="k">Geburtsdatum</span>
+                  <span className="v">{profile.birthDate}</span>
+                  <span className="sep">·</span>
+                  <span className="k">Wohnadresse</span>
                   <span className="v address-line">
                     <span className="seg">{profile.street}</span>
                     <span className="sep">·</span>
                     <span className="seg"><span className="tabular">{profile.plz}</span> {profile.municipality}</span>
-                    <span className="sep">·</span>
-                    <span className="seg">Politische Gemeinde {profile.municipality}</span>
-                    <span className="sep">·</span>
-                    <span className="seg">Kanton {profile.canton}</span>
                   </span>
                 </div>
+              </div>
+              <div className="preprint-kontrolle" aria-label="Kontrolle – leer lassen">
+                <span className="pk-label">Kontrolle<br/><span className="pk-hint">(leer lassen)</span></span>
+                <span className="pk-box"></span>
               </div>
             </div>
           </div>
 
           {/* NAME ZONE (above fold) */}
           <div className="write-zone write-zone--name">
-            <div className="zone-label">
-              <strong>Vorname und Nachname</strong>
-              <span>eigenhändig, in Blockschrift — Pflicht</span>
+            <div className="zone-label zone-label--name">
+              {prefill && (profile.firstName || profile.lastName) ? (
+                <strong>{profile.firstName} {profile.lastName}</strong>
+              ) : (
+                <strong>Vorname und Nachname</strong>
+              )}
+              <span className="instr">Schreiben Sie Ihren Vor- und Nachnamen in Blockschrift in das Feld.</span>
+              {prefill && (profile.firstName || profile.lastName) && (
+                <span className="instr instr--note">Der bereits angedruckte Wert dient nur zur Verifikation und ersetzt nicht die handschriftliche Angabe.</span>
+              )}
             </div>
+            <label className="assist-check assist-check--rotated">
+              <input type="checkbox" defaultChecked={!!profile.assistMode && !printMode}/>
+              <span>Der Bogen wird für eine schreibunfähige Person im Namen einer stimmberechtigten Assistenzperson ausgefüllt.</span>
+            </label>
+            {prefill && profile.assistMode && !printMode && (
+              <span className="assist-handX" aria-hidden="true">✗</span>
+            )}
             <div className="blank">
-              {prefill && (
+              {prefill && !profile.assistMode && !printMode && (
                 <span className="hand">{profile.firstName.toUpperCase()}  {profile.lastName.toUpperCase()}</span>
               )}
             </div>
@@ -103,9 +118,7 @@ function BogenFront({ profile, prefill = true, showAnnots = true, activeAnnotId,
             FOLD MARK — absolutely positioned at exactly 50% of the page
             ============================================================ */}
         <div className="fold-mark fold-mark-abs" aria-hidden="true">
-          <span className="scissors"><Scissors/></span>
-          <span className="fold-mid">⟶ Faltkante · taktil ertastbar ⟵</span>
-          <span className="fold-label">Hier falten</span>
+          <span className="fold-mid">⟶ FALTKANTE, HIER FALTEN ⟵</span>
         </div>
 
         {/* ============================================================
@@ -115,14 +128,19 @@ function BogenFront({ profile, prefill = true, showAnnots = true, activeAnnotId,
 
           {/* SIGNATURE ZONE */}
           <div className="write-zone write-zone--sig">
-            <div className="zone-label">
+            <div className="zone-label zone-label--sig">
               <strong>Eigenhändige Unterschrift</strong>
-              <span>oder «im Auftrag» bei Schreibunfähigkeit</span>
+              <span className="instr">Bei Schreibunfähigkeit: Stimmberechtigte Assistenzperson trägt in Blockschrift «im Auftrag / i.A.» samt eigenem Namen ein und unterzeichnet selbst (Art. 18a VPR).</span>
             </div>
             <div className="blank">
-              {prefill && (
+              {!printMode && prefill && profile.assistMode && profile.assistant ? (
+                <React.Fragment>
+                  <span className="hand sig-name">i.A. {profile.assistant.firstName.toUpperCase()} {profile.assistant.lastName.toUpperCase()}</span>
+                  <span className="hand sig sig-assist">{profile.assistant.firstName.charAt(0)}.{profile.assistant.lastName.toLowerCase()}</span>
+                </React.Fragment>
+              ) : (!printMode && prefill) ? (
                 <span className="hand sig">{profile.firstName.charAt(0)}.{profile.lastName.split(' ')[0].toLowerCase()}</span>
-              )}
+              ) : null}
             </div>
           </div>
 
@@ -135,16 +153,18 @@ function BogenFront({ profile, prefill = true, showAnnots = true, activeAnnotId,
           {/* BOTTOM ROW: Bescheinigung + Komitee */}
           <div className="bottom-row">
             <div className="bescheinigung">
-              <h4>Stimmrechtsbescheinigung (durch die Gemeinde)</h4>
+              <h4>Die untenstehende Stimmrechtsbescheinigung wird durch das Initiativkomitee eingeholt.</h4>
+              <p className="bescheinigung-intro">
+                Die unterzeichnete Amtsperson bescheinigt hiermit, dass obenstehende <span className="anzahl">&nbsp;</span> Unterzeichnerin / obenstehender Unterzeichner der Volksinitiative in eidgenössischen Angelegenheiten stimmberechtigt ist und die politischen Rechte in der erwähnten Gemeinde <strong style={{ fontWeight: 500 }}>{profile.municipality}</strong> ausübt.
+              </p>
+              <p className="bescheinigung-sub">Die zur Bescheinigung zuständige Amtsperson (eigenhändige Unterschrift und amtliche Eigenschaft):</p>
               <div className="b-grid">
-                <span className="k">Anzahl</span><span><span className="anzahl">1</span> Person stimmberechtigt in <strong style={{ fontWeight: 500 }}>{profile.municipality}</strong></span>
                 <span className="k">Ort</span><span className="line"></span>
+                <span className="k">Eigenhändige Unterschrift</span><span className="line"></span>
                 <span className="k">Datum</span><span className="line"></span>
-                <span className="k">Amtsperson</span><span className="line"></span>
-                <span className="k">Eigenschaft</span><span className="line"></span>
+                <span className="k">Amtl. Eigenschaft</span><span className="line"></span>
                 <span className="k">Amtsstempel</span><span className="line tall" style={{ gridColumn: 'span 3' }}></span>
               </div>
-              <p className="note">Die Stimmrechtsbescheinigung wird durch das Initiativkomitee eingeholt.</p>
             </div>
             <div className="komitee-col">
               <h4>Initiativkomitee</h4>

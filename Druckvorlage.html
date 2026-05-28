@@ -133,8 +133,11 @@
 </head>
 <body>
   <div class="print-toolbar">
-    <h1>U-Bogen · Druckvorlage <small>Mobilitätsbon-Initiative · A4 Hochformat, 2 Seiten</small></h1>
+    <h1>U-Bogen · Druckvorlage <small id="toolbar-subtitle">Mobilitätsbon-Initiative · A4 Hochformat, 2 Seiten</small></h1>
     <div class="actions">
+      <select id="profile-select" style="background: #2a2c34; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 7px 12px; font-family: inherit; font-size: 13px; cursor: pointer; border-radius: 0;">
+        <option value="blank">Blanko (zum Ausfüllen)</option>
+      </select>
       <button class="secondary" onclick="window.location.href = 'U-Bogen Prototyp.html'">← Zurück zum Prototyp</button>
       <button onclick="window.print()">Als PDF drucken / speichern</button>
     </div>
@@ -157,32 +160,58 @@
   <script type="text/babel" src="bogen-front.jsx"></script>
   <script type="text/babel" src="bogen-back.jsx"></script>
   <script type="text/babel">
-    // Blank profile — no personal data preprinted, no Bogen-ID either
+    // Blank profile — for empty print version
     const blank = {
-      salutation: '',
-      firstName: '',
-      lastName: '',
-      birthDate: '',
-      street: '',
-      plz: '',
-      municipality: '',
-      canton: '',
+      salutation: '', firstName: '', lastName: '', birthDate: '',
+      street: '', plz: '', municipality: '', canton: '',
       bogenId: '____-____-____-____',
     };
 
-    // Each page wraps a bogen-card so the existing CSS targets work; the
-    // 3D-transform rules are flattened by .print-page overrides above.
+    // Read ?profile=... from URL. 'blank' (default) or a PROFILES.id (e.g. 'anna', 'hans')
+    function getProfileFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('profile') || 'blank';
+      if (id === 'blank') return { profile: blank, prefill: false, label: 'Blanko' };
+      const p = (window.PROFILES || []).find(x => x.id === id);
+      if (!p) return { profile: blank, prefill: false, label: 'Blanko' };
+      return { profile: p, prefill: true, label: `${p.firstName} ${p.lastName} · ${p.municipality}` };
+    }
+
+    // Populate the profile dropdown after data.jsx loaded
+    (function populateSelect() {
+      const sel = document.getElementById('profile-select');
+      (window.PROFILES || []).forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.firstName} ${p.lastName} · ${p.municipality}` + (p.assistMode ? ' (Art. 18a VPR)' : '');
+        sel.appendChild(opt);
+      });
+      const cur = new URLSearchParams(window.location.search).get('profile') || 'blank';
+      sel.value = cur;
+      sel.addEventListener('change', () => {
+        const v = sel.value;
+        const u = new URL(window.location.href);
+        if (v === 'blank') u.searchParams.delete('profile');
+        else u.searchParams.set('profile', v);
+        window.location.href = u.toString();
+      });
+    })();
+
+    const { profile, prefill, label } = getProfileFromUrl();
+    document.getElementById('toolbar-subtitle').textContent =
+      `Mobilitätsbon-Initiative · A4 Hochformat, 2 Seiten · ${label}`;
+
     const FrontPage = () => (
       <div className="bogen-stack" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
-        <div className="bogen-card no-prefill no-annots">
-          <BogenFront profile={blank} prefill={false} showAnnots={false} onQRScan={() => {}} />
+        <div className={'bogen-card' + (prefill ? '' : ' no-prefill') + ' no-annots'}>
+          <BogenFront profile={profile} prefill={prefill} printMode={true} showAnnots={false} onQRScan={() => {}} />
         </div>
       </div>
     );
     const BackPage = () => (
       <div className="bogen-stack" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
-        <div className="bogen-card no-prefill no-annots">
-          <BogenBack profile={blank} showAnnots={false} onQRScan={() => {}} />
+        <div className={'bogen-card' + (prefill ? '' : ' no-prefill') + ' no-annots'}>
+          <BogenBack profile={profile} showAnnots={false} onQRScan={() => {}} />
         </div>
       </div>
     );

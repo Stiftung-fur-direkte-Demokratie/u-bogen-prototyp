@@ -92,8 +92,7 @@ function BogenBack({ profile, showAnnots = true, activeAnnotId, onAnnotActivate,
 
         {/* FOLD MARK — positioned absolutely at exactly 50% of the A4 to mirror the front fold */}
         <div className="back-fold" aria-hidden="true">
-          <span className="scissors"><Scissors/></span>
-          <span className="fold-mid">⟶ Hier falten und mit Tesafilm zukleben ⟵</span>
+          <span className="fold-mid">⟶ FALTKANTE, HIER FALTEN ⟵</span>
         </div>
 
         {/* FOOT — small reassurance / branding */}

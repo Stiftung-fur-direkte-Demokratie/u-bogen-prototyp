@@ -163,6 +163,11 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
   border: 1px dashed var(--surface-divider);
   color: var(--text-primary);
 }
+.front-meta .gemeinde-meta {
+  font-size: 10px; font-weight: 500;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
 
 /* Bullets row */
 .front-bullets {
@@ -244,6 +249,32 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
   background: var(--surface-section);
   border: 1px solid var(--surface-divider);
   padding: 8px 14px;
+  position: relative;
+  display: flex; align-items: center; gap: 14px;
+}
+.preprint-band > .preprint-fields { flex: 1; min-width: 0; }
+
+.preprint-kontrolle {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding-left: 12px;
+  border-left: 1px solid var(--surface-divider);
+  align-self: stretch;
+}
+.preprint-kontrolle .pk-label {
+  font-size: 8.5px; line-height: 1.2;
+  letter-spacing: 0.4px; text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: right;
+}
+.preprint-kontrolle .pk-hint {
+  font-size: 8px; color: var(--text-muted);
+  letter-spacing: 0;
+}
+.preprint-kontrolle .pk-box {
+  width: 28px; height: 28px;
+  background: #fff;
+  border: 1px solid var(--text-primary);
 }
 .preprint-fields {
   display: grid;
@@ -284,6 +315,29 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
 .preprint-fields .address-line .seg { font-weight: 500; }
 .preprint-fields .address-line .sep { color: var(--text-muted); font-weight: 400; }
 
+.preprint-fields--single {
+  display: block;
+}
+.preprint-fields--single .f-inline {
+  display: flex; flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 11px; line-height: 1.4;
+}
+.preprint-fields--single .f-inline .k {
+  font-size: 8.5px; letter-spacing: 0.4px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.preprint-fields--single .f-inline .v {
+  font-weight: 500; font-variant-numeric: tabular-nums;
+}
+.preprint-fields--single .f-inline .sep {
+  color: var(--text-muted); font-weight: 400;
+}
+.preprint-fields--single .f-inline .address-line {
+  display: inline-flex; flex-wrap: wrap; gap: 0 6px;
+}
+
 /* When prefill is OFF: empty values, hide stamp */
 .bogen-card.no-prefill .preprint-fields .f .v { color: transparent; position: relative; }
 .bogen-card.no-prefill .preprint-fields .f .v::after {
@@ -317,6 +371,80 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
   font-size: 11px;
 }
 .write-zone .zone-label .lawref { font-size: 9px; color: var(--text-muted); margin-left: auto; }
+.write-zone .zone-label--name {
+  flex-wrap: wrap; column-gap: 10px; row-gap: 2px;
+}
+.write-zone .zone-label--name strong {
+  text-transform: none; font-size: 12px;
+  color: var(--surface-brand);
+}
+.write-zone .zone-label--name .verif-note {
+  font-size: 9px; color: var(--text-muted);
+  text-transform: none; letter-spacing: 0;
+}
+.write-zone .zone-label--name .instr {
+  font-size: 9.5px; color: var(--text-body);
+  text-transform: none; letter-spacing: 0;
+}
+.write-zone .zone-label--name .instr--note {
+  flex-basis: 100%;
+  font-size: 9px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 2px;
+}
+.write-zone--name {
+  position: relative;
+  padding-right: 80px; /* room for the rotated checkbox on the right edge */
+}
+/* The entire label (input + text) is rotated together via writing-mode + rotate(180):
+   - writing-mode: vertical-rl flows children along a vertical inline axis
+   - rotate(180deg) flips reading direction to bottom-to-top
+   - Result: input sits at the visual BOTTOM, text continues ABOVE it (reading upward)
+   - Text wraps into multiple columns as needed within the available height */
+.assist-check--rotated {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  bottom: 8px;
+  width: 64px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  transform-origin: center;
+  display: flex;
+  flex-direction: row; /* inline axis under vertical-rl */
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  cursor: pointer;
+  border-left: 1px dashed var(--surface-divider);
+  padding: 6px 4px;
+}
+.assist-check--rotated input {
+  margin: 0;
+  width: 14px; height: 14px;
+  accent-color: var(--surface-brand);
+  flex-shrink: 0;
+  /* Cancel the parent rotation so the native checkbox draws upright */
+  transform: rotate(180deg);
+}
+.assist-check--rotated > span {
+  font-size: 8.5px;
+  line-height: 1.35;
+  color: var(--text-body);
+  text-transform: none;
+  letter-spacing: 0;
+  white-space: normal;
+}
+.write-zone .zone-label--sig {
+  flex-wrap: wrap; column-gap: 10px; row-gap: 2px;
+}
+.write-zone .zone-label--sig .instr {
+  flex-basis: 100%;
+  font-size: 9.5px; color: var(--text-body);
+  text-transform: none; letter-spacing: 0;
+  margin-top: 2px;
+}
 .write-zone .blank {
   flex: 1; min-height: 60px;
   position: relative;
@@ -337,6 +465,40 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
   color: #0c1224;
   letter-spacing: 0.5px;
 }
+.write-zone .hand.sig-name {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  font-size: 22px; line-height: 1;
+  color: #15161a;
+  letter-spacing: 1.2px;
+  font-family: 'Caveat', 'Patrick Hand', cursive;
+}
+.write-zone .hand.sig-assist {
+  /* Signature placed to the RIGHT of the printed "i.A. VORNAME NACHNAME"
+     to clearly separate Blockschrift name from the actual signature. */
+  bottom: 6px;
+  left: auto;
+  right: 80px;
+}
+/* Handwritten X over the rotated checkbox when assistMode is active.
+   Positioned in the .write-zone--name coordinate system so it doesn't fight
+   the rotated label's writing-mode. The checkbox sits at the visual
+   bottom-right of the rotated label (right: 8px..bottom-ish), so we overlay
+   the X there. */
+.write-zone--name .assist-handX {
+  position: absolute;
+  right: 28px;
+  bottom: 10px;
+  font-family: 'Caveat', 'Patrick Hand', cursive;
+  font-size: 32px;
+  font-weight: 700;
+  color: #15161a;
+  line-height: 1;
+  pointer-events: none;
+  transform: rotate(-6deg);
+  z-index: 2;
+}
 
 .write-zone--name, .write-zone--sig { /* flex sizing defined above */ }
 
@@ -346,7 +508,7 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
   height: 28px;
   margin: 0 -28px; /* extends to bogen edges */
   display: flex; align-items: center;
-  background-color: #fafaf7;
+  background-color: transparent;
 }
 .fold-mark::before {
   content: '';
@@ -355,29 +517,22 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
   border-top: 1.5px dashed #15161a;
   transform: translateY(-50%);
 }
-.fold-mark::after {
-  /* embossed (tactile) sibling line above the dashed line */
-  content: '';
-  position: absolute;
-  left: 28px; right: 28px; top: 50%;
-  border-top: 1px solid rgba(0,0,0,0.18);
-  transform: translateY(-7px);
-}
+.fold-mark::after { content: none; }
 .fold-mark .scissors {
   position: absolute; left: 56px; top: 50%; transform: translateY(-50%);
   width: 18px; height: 18px;
-  background: #fafaf7; padding: 0 6px;
+  background: #fff; padding: 0 6px;
   color: #15161a;
 }
 .fold-mark .scissors svg { width: 100%; height: 100%; display: block; }
 .fold-mark .fold-label {
   position: absolute; right: 56px; top: 50%; transform: translateY(-50%);
   font-size: 9.5px; letter-spacing: 1.6px; text-transform: uppercase;
-  background: #fafaf7; padding: 0 10px; color: var(--text-muted);
+  background: #fff; padding: 0 10px; color: var(--text-muted);
 }
 .fold-mark .fold-mid {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  background: #fafaf7; padding: 0 10px;
+  background: #fff; padding: 0 10px;
   font-size: 9px; letter-spacing: 1.6px; text-transform: uppercase;
   color: var(--text-primary); font-weight: 500;
 }
@@ -420,9 +575,28 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
   padding: 10px 12px;
 }
 .bescheinigung h4 {
-  font-size: 9.5px; text-transform: uppercase; letter-spacing: 1px;
+  font-size: 10px; text-transform: none; letter-spacing: 0.2px;
   font-weight: 500; margin: 0 0 6px;
   color: var(--text-primary);
+  line-height: 1.35;
+}
+.bescheinigung-intro {
+  font-size: 9px; line-height: 1.4;
+  color: var(--text-body);
+  margin: 0 0 6px;
+}
+.bescheinigung-intro .anzahl {
+  display: inline-block; background: #fff;
+  border: 1px solid var(--text-primary);
+  min-width: 28px; padding: 0 6px;
+  font-weight: 500; font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.bescheinigung-sub {
+  font-size: 8.5px; line-height: 1.35;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+  font-style: italic;
 }
 .bescheinigung .b-grid {
   display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 6px 10px;
@@ -581,12 +755,7 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
   border-top: 1.5px dashed #15161a;
   transform: translateY(-50%);
 }
-.back-fold::after {
-  content: ''; position: absolute;
-  left: 28px; right: 28px; top: 50%;
-  border-top: 1px solid rgba(0,0,0,0.18);
-  transform: translateY(-7px);
-}
+.back-fold::after { content: none; }
 .back-fold .scissors {
   position: absolute; left: 56px; top: 50%; transform: translateY(-50%);
   width: 18px; height: 18px; background: #fff; padding: 0 6px;
@@ -984,60 +1153,83 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
   z-index: 1000;
 }
 .qr-modal {
-  background: #15161a; color: #fff;
-  width: 320px; max-width: 92vw;
-  border-radius: 32px;
-  padding: 16px;
-  font-family: var(--font-sans);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-  position: relative;
-}
-.qr-modal::before {
-  content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
-  width: 60px; height: 6px; background: #2a2c34; border-radius: 4px;
-}
-.qr-modal .screen {
-  background: #f7f6f1;
+  background: #fff;
   color: var(--text-primary);
-  border-radius: 18px;
-  margin-top: 16px;
-  padding: 18px 18px 22px;
+  width: min(640px, 92vw);
+  max-height: 88vh;
+  border-radius: 16px;
+  padding: 0;
+  font-family: var(--font-sans);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.06);
+  position: relative;
+  overflow: hidden;
+  display: grid; grid-template-rows: auto 1fr;
+}
+.qr-modal::before { content: none; }
+.qr-modal .modal-head {
+  background: #15161a; color: #fff;
+  padding: 16px 22px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.qr-modal .modal-head h3 {
+  margin: 0; font-size: 15px; font-weight: 500;
+}
+.qr-modal .modal-head h3 small {
+  color: rgba(255,255,255,0.6); font-weight: 400; margin-left: 8px; font-size: 12px;
+}
+.qr-modal .close-modal {
+  position: static;
+  background: transparent; color: rgba(255,255,255,0.8);
+  border: 0; cursor: pointer; font-size: 22px; line-height: 1;
+  padding: 4px 8px;
+}
+.qr-modal .close-modal:hover { color: #fff; }
+
+.qr-modal .screen {
+  background: #fff;
+  color: var(--text-primary);
+  border-radius: 0;
+  margin-top: 0;
+  padding: 22px 26px 26px;
+  overflow: auto;
 }
 .qr-modal .scan-frame {
-  display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: center;
-  padding-bottom: 14px; border-bottom: 1px solid var(--surface-divider);
+  display: grid; grid-template-columns: 72px 1fr; gap: 16px; align-items: center;
+  padding-bottom: 16px; border-bottom: 1px solid var(--surface-divider);
 }
 .qr-modal .scan-frame .mini-qr {
-  width: 56px; height: 56px; background: #fff; padding: 4px;
+  width: 72px; height: 72px; background: #fff; padding: 4px;
   border: 1px solid var(--text-primary);
 }
-.qr-modal .scan-frame strong { font-size: 13px; display: block; }
+.qr-modal .scan-frame strong { font-size: 14px; display: block; }
 .qr-modal .scan-frame .meta {
-  font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);
-  margin-top: 2px;
+  font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);
+  margin-top: 4px;
 }
 .qr-modal h4 {
-  font-size: 14px; font-weight: 500; margin: 14px 0 6px;
+  font-size: 13px; font-weight: 500; margin: 18px 0 8px;
+  letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-muted);
 }
 .qr-modal .transcript {
-  font-size: 13px; line-height: 1.5;
-  background: #fff;
-  padding: 10px 12px;
+  font-size: 15px; line-height: 1.6;
+  background: var(--surface-section);
+  padding: 16px 18px;
   border-left: 3px solid var(--surface-brand);
+  color: var(--text-body);
 }
 .qr-modal .player {
   background: var(--surface-brand);
   color: #fff;
-  margin-top: 14px;
+  margin-top: 18px;
   border-radius: 12px;
-  padding: 10px 12px;
-  display: grid; grid-template-columns: 40px 1fr auto; gap: 10px;
+  padding: 12px 16px;
+  display: grid; grid-template-columns: 44px 1fr auto; gap: 14px;
   align-items: center;
 }
 .qr-modal .player .play {
-  width: 40px; height: 40px; border-radius: 50%;
+  width: 44px; height: 44px; border-radius: 50%;
   background: #fff; color: var(--surface-brand);
-  display: grid; place-items: center; font-size: 14px;
+  display: grid; place-items: center; font-size: 15px;
   cursor: pointer; border: 0;
 }
 .qr-modal .player .bar {

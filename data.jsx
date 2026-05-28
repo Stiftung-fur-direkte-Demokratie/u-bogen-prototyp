@@ -90,6 +90,24 @@ const PROFILES = [
     canton: 'GE',
     bogenId: 'MBI-2026-04-0008-7714',
   },
+  {
+    id: 'hans',
+    salutation: 'Herr',
+    firstName: 'Hans',
+    lastName: 'Müller',
+    birthDate: '03.02.1939',
+    street: 'Bahnhofstrasse 12',
+    plz: '8001',
+    municipality: 'Zürich',
+    canton: 'ZH',
+    bogenId: 'MBI-2026-04-0008-5582',
+    // Special case: schreibunfähig — Art. 18a VPR
+    assistMode: true,
+    assistant: {
+      firstName: 'Maria',
+      lastName: 'Schmidt',
+    },
+  },
 ];
 
 window.INITIATIVE = INITIATIVE;

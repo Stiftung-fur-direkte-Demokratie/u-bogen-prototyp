@@ -110,6 +110,15 @@ function App() {
                   <button className={side === 'back'  ? 'is-active' : ''} onClick={() => setSide('back')}>Rückseite</button>
                 </div>
                 <div className="sep"></div>
+                <label className={'toggle' + (prefill ? ' on' : '')} onClick={() => setPrefill(!prefill)}>
+                  <span className="track"></span>
+                  <span>Vorgedruckte Daten</span>
+                </label>
+                <label className={'toggle' + (t.showAnnots ? ' on' : '')} onClick={() => setTweak('showAnnots', !t.showAnnots)}>
+                  <span className="track"></span>
+                  <span>Annotationen</span>
+                </label>
+                <div className="sep"></div>
                 <div className="group">
                   <span className="label">Person</span>
                   <select
@@ -126,15 +135,6 @@ function App() {
                     ))}
                   </select>
                 </div>
-                <div className="sep"></div>
-                <label className={'toggle' + (prefill ? ' on' : '')} onClick={() => setPrefill(!prefill)}>
-                  <span className="track"></span>
-                  <span>Vorgedruckte Daten</span>
-                </label>
-                <label className={'toggle' + (t.showAnnots ? ' on' : '')} onClick={() => setTweak('showAnnots', !t.showAnnots)}>
-                  <span className="track"></span>
-                  <span>Annotationen</span>
-                </label>
                 <div style={{ flex: 1 }}></div>
                 <div className="group">
                   {!tourActive

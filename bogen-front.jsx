@@ -32,7 +32,7 @@ function BogenFront({ profile, prefill = true, printMode = false, showAnnots = t
               title="QR-Code scannen (Demo)"
               role="button"
             >
-              <QRCode size={78} seed={'front-' + profile.bogenId} />
+              <QRCode size={78} side="front" bogenId={profile.bogenId} />
               <span className="qr-label">Vorderseite ↑</span>
             </div>
             <div className="front-title">

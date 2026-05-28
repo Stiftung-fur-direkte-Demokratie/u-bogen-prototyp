@@ -18,7 +18,7 @@ function BogenBack({ profile, showAnnots = true, activeAnnotId, onAnnotActivate,
             title="QR-Code scannen (Demo)"
             style={{ width: 96, height: 96 }}
           >
-            <QRCode size={96} seed={'back-' + profile.bogenId} />
+            <QRCode size={96} side="back" bogenId={profile.bogenId} />
             <span className="qr-label">Rückseite – umdrehen</span>
           </div>
           <div>

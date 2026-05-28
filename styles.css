@@ -1102,6 +1102,23 @@ html, body { margin: 0; padding: 0; background: var(--surface-base); color: var(
   font-weight: 500;
 }
 .bogen-controls button.is-primary:hover { background: #FFD650; }
+.bogen-controls .profile-select {
+  background: transparent;
+  border: 1px solid var(--surface-divider);
+  padding: 6px 28px 6px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%2329261b' d='M0 0h10L5 6z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: background-color 150ms var(--ease-out);
+}
+.bogen-controls .profile-select:hover:not(:disabled) { background-color: var(--surface-section); }
+.bogen-controls .profile-select:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .toggle {
   display: inline-flex; align-items: center; gap: 8px;

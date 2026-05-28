@@ -3,35 +3,47 @@
 
 const { useState: useStateE, useEffect: useEffectE, useRef: useRefE } = React;
 
-// Decorative QR-code svg — deterministic noisy fill so it looks plausible.
-function QRCode({ size = 78, seed = 'mbi', label }) {
-  // Build a 21x21 grid pseudo-random based on the seed
-  const N = 21;
-  let s = 0;
-  for (let i = 0; i < seed.length; i++) s = (s * 31 + seed.charCodeAt(i)) >>> 0;
-  function rand() { s = (s * 1664525 + 1013904223) >>> 0; return (s & 0xffff) / 0xffff; }
+// Base URL for the deployed prototype – QR codes encode a URL pointing here
+// with ?side=front|back&id={bogenId} so a phone scan opens the audio guide.
+const QR_BASE_URL = 'https://stiftung-fur-direkte-demokratie.github.io/u-bogen-prototyp/';
+
+function buildBogenURL(side, bogenId) {
+  return `${QR_BASE_URL}?side=${side}&id=${encodeURIComponent(bogenId || '')}`;
+}
+
+// Real, scannable QR code. Uses the global `qrcode` function provided by
+// qrcode-generator (loaded via CDN in index.html / Druckvorlage.html).
+function QRCode({ size = 78, value, side, bogenId, label }) {
+  const url = value || (side ? buildBogenURL(side, bogenId) : QR_BASE_URL);
+
+  // Auto type-number (0) + medium error correction is a good balance
+  // for printed bogens that might be smudged or slightly folded.
+  let modules;
+  try {
+    const qr = window.qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+    const N = qr.getModuleCount();
+    modules = { N, isDark: (y, x) => qr.isDark(y, x) };
+  } catch (e) {
+    // Library not loaded yet — render a blank box so the layout stays stable.
+    return (
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-label={label || 'QR-Code'}>
+        <rect width={size} height={size} fill="#fff"/>
+      </svg>
+    );
+  }
+
+  const { N, isDark } = modules;
+  const cellSize = size / N;
   const cells = [];
   for (let y = 0; y < N; y++) {
     for (let x = 0; x < N; x++) {
-      // Finder patterns at corners
-      const inFinder = (
-        (x < 7 && y < 7) || (x >= N-7 && y < 7) || (x < 7 && y >= N-7)
-      );
-      if (inFinder) {
-        // outer ring + inner block
-        const dx = x < 7 ? x : (x >= N-7 ? N-1-x : 0);
-        const dy = y < 7 ? y : (y >= N-7 ? N-1-y : 0);
-        const ring = (dx === 0 || dx === 6 || dy === 0 || dy === 6);
-        const inner = (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4);
-        if (ring || inner) cells.push([x, y]);
-      } else {
-        if (rand() > 0.55) cells.push([x, y]);
-      }
+      if (isDark(y, x)) cells.push([x, y]);
     }
   }
-  const cellSize = size / N;
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-label={label || 'QR-Code'}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-label={label || `QR-Code – ${url}`}>
       <rect width={size} height={size} fill="#fff"/>
       {cells.map(([x, y], i) => (
         <rect key={i} x={x * cellSize} y={y * cellSize} width={cellSize + 0.4} height={cellSize + 0.4} fill="#15161a"/>
@@ -99,6 +111,8 @@ function AnnotationPopover({ pop, onClose }) {
 }
 
 window.QRCode = QRCode;
+window.QR_BASE_URL = QR_BASE_URL;
+window.buildBogenURL = buildBogenURL;
 window.Scissors = Scissors;
 window.AnnotationDot = AnnotationDot;
 window.AnnotationPopover = AnnotationPopover;

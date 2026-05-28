@@ -3,18 +3,31 @@
 
 const { useState: useStateA, useEffect: useEffectA, useMemo: useMemoA, useRef: useRefA } = React;
 
-// Tour order: which annotation to highlight at each step
+// Tour order: which annotation to highlight at each step.
+// Folgt der visuellen Lese-Reihenfolge (oben → unten je Seite) und deckt
+// alle Annotationen aus ANNOTATIONS_FRONT und ANNOTATIONS_BACK ab.
 const TOUR_STEPS = [
+  // ---------- Vorderseite (Schreibseite) ----------
+  { id: 'qr-front',                side: 'front', title: 'QR-Code Audio-Anleitung',                        hint: 'Scan startet die gesprochene Anleitung.' },
   { id: 'title',                   side: 'front', title: 'Initiative-Titel und Bundesblatt-Datum',         hint: 'Pflichtangabe nach Art. 68 BPR.' },
+  { id: 'deadline',                side: 'front', title: 'Ablauf Sammelfrist',                             hint: '18 Monate ab Veröffentlichung im Bundesblatt.' },
+  { id: 'bogen-id',                side: 'front', title: 'Eindeutige Bogen-ID',                            hint: 'Rückverfolgbarkeit ohne Re-Identifikation.' },
   { id: 'legal-preamble',          side: 'front', title: 'Vollständiger Initiativtext',                    hint: 'Wortlaut der Verfassungsänderung + Strafhinweis.' },
   { id: 'preprint-band',           side: 'front', title: 'Vorgedruckte Personendaten',                     hint: 'Adresse, Geburtsdatum, Gemeinde, Kanton – aus dem Online-Formular.' },
   { id: 'name-zone',               side: 'front', title: 'Vorname + Nachname (eigenhändig)',                hint: 'Das gesetzliche Minimum von Hand.' },
+  { id: 'art-18a',                 side: 'front', title: 'Unterzeichnung für Schreibunfähige',             hint: 'Assistenzperson: «i.A.» + eigener Name + eigene Unterschrift (Art. 18a VPR).' },
   { id: 'fold-mark',               side: 'front', title: 'Taktile Faltmarke',                              hint: 'Orientierungsanker für blinde Personen und Faltkante.' },
   { id: 'sig-zone',                side: 'front', title: 'Eigenhändige Unterschrift',                      hint: 'Vollflächig – auch bei Tremor bequem nutzbar.' },
   { id: 'bescheinigung',           side: 'front', title: 'Stimmrechtsbescheinigung',                       hint: 'Die Gemeinde bescheinigt – wie bei jedem klassischen Bogen.' },
-  { id: 'qr-front',                side: 'front', title: 'QR-Code Audio-Anleitung',                        hint: 'Scan startet die gesprochene Anleitung.' },
+  { id: 'komitee',                 side: 'front', title: 'Initiativkomitee + Rückzugsklausel',             hint: 'Pflichtangabe nach Art. 68 lit. c/e BPR.' },
+
+  // ---------- Rückseite (Versandseite) ----------
+  { id: 'qr-back',                 side: 'back',  title: 'QR-Code «Rückseite – bitte umdrehen»',            hint: 'Scan erkennt falsche Seite und gibt Audio-Hinweis.' },
+  { id: 'hinweis-unterzeichnende', side: 'back',  title: 'Anleitung für Unterzeichnende',                  hint: 'Vier Schritte: prüfen, schreiben, unterzeichnen, falten + zukleben.' },
   { id: 'hinweis-gemeinde',        side: 'back',  title: 'Hinweis Gemeinde (Bescheinigung)',               hint: 'Transparenz: Vorgedruckte Daten sind zulässig.' },
   { id: 'hinweis-bk',              side: 'back',  title: 'Hinweis Bundeskanzlei (Schlusskontrolle)',       hint: 'Vermeidet «Streichstopp»-Auffälligkeiten.' },
+  { id: 'fold-mark-back',          side: 'back',  title: 'Faltmarke auch auf der Rückseite',               hint: 'Visuell + taktil – egal, von welcher Seite gefaltet wird.' },
+  { id: 'sender',                  side: 'back',  title: 'Absender-Angaben',                               hint: 'Vorgedruckt aus dem Online-Formular – Retoure bei Unzustellbarkeit.' },
   { id: 'gas',                     side: 'back',  title: 'Geschäftsantwortsendung',                       hint: 'Porto übernimmt das Komitee. Kein Briefporto.' },
   { id: 'recipient',               side: 'back',  title: 'Empfänger-Adresse (Komitee)',                   hint: 'Sichtbar auf der Aussenseite nach dem Falten.' },
 ];
@@ -34,11 +47,17 @@ function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
   // Local prototype state
-  const [side, setSide]               = useStateA(() => (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('side') === 'back') ? 'back' : 'front');
+  const urlParams = useMemoA(() => (typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams()), []);
+  const urlSide = urlParams.get('side') === 'back' ? 'back' : (urlParams.get('side') === 'front' ? 'front' : null);
+  const urlBogenId = urlParams.get('id') || '';
+
+  const [side, setSide]               = useStateA(() => urlSide || 'front');
   const [prefill, setPrefill]         = useStateA(true);
   const [activeAnnotId, setActive]    = useStateA(null);
   const [tourStep, setTourStep]       = useStateA(-1);   // -1 = off
-  const [qrModal, setQrModal]         = useStateA({ open: false, side: 'front', bogenId: '' });
+  const [qrModal, setQrModal]         = useStateA(() => urlSide
+    ? { open: true, side: urlSide, bogenId: urlBogenId }
+    : { open: false, side: 'front', bogenId: '' });
 
   // Editable profile — start from the chosen preset, allow MiniForm to edit
   const baseProfile = useMemoA(() => {
@@ -89,6 +108,23 @@ function App() {
                   <span className="label">Seite</span>
                   <button className={side === 'front' ? 'is-active' : ''} onClick={() => setSide('front')}>Vorderseite</button>
                   <button className={side === 'back'  ? 'is-active' : ''} onClick={() => setSide('back')}>Rückseite</button>
+                </div>
+                <div className="sep"></div>
+                <div className="group">
+                  <span className="label">Person</span>
+                  <select
+                    className="profile-select"
+                    value={t.profileId}
+                    onChange={(e) => setTweak('profileId', e.target.value)}
+                    disabled={!prefill}
+                    title={prefill ? 'Beispiel-Person für vorgedruckte Daten' : 'Erst «Vorgedruckte Daten» aktivieren'}
+                  >
+                    {window.PROFILES.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.firstName} {p.lastName} · {p.municipality}{p.assistMode ? ' (Art. 18a VPR)' : ''}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="sep"></div>
                 <label className={'toggle' + (prefill ? ' on' : '')} onClick={() => setPrefill(!prefill)}>

@@ -202,7 +202,7 @@ function QRAudioModal({ open, side, bogenId, onClose }) {
         </div>
         <div className="screen">
           <div className="scan-frame">
-            <div className="mini-qr"><QRCode size={64} seed={side + '-' + bogenId}/></div>
+            <div className="mini-qr"><QRCode size={64} side={side} bogenId={bogenId}/></div>
             <div>
               <strong>{isFront ? 'VORDERSEITE OBEN' : 'RÜCKSEITE – bitte umdrehen'}</strong>
               <div className="meta">{bogenId}</div>
